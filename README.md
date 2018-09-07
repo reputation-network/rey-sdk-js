@@ -21,3 +21,6 @@ $ yarn test
 - Make sure you are on a  **clean working directory**: no staged files, no unstaged files
 - Run `yarn version`, when prompted, insert the new version number. This command will build the library and commit the changes tagged with the version. Running `git log -1` afterwards should show a commit with the new version.
 - Push the changes with `git push origin master --follow-tags`
+
+## LICENSE
+MIT © 2018 [Reputation Network](./LICENSE)
