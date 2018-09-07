@@ -1,0 +1,39 @@
+{
+  "name": "rey-sdk",
+  "version": "0.1.0-alpha.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module.root": "dist/",
+  "types": "dist/index.d.ts",
+  "browser": "dist/rey-sdk.js",
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "npm-run-all": "^4.1.3",
+    "ts-loader": "^5.0.0",
+    "ts-node": "^7.0.1",
+    "typescript": "^2.9.2",
+    "webpack": "^4.17.2",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "@types/ethereumjs-util": "^5.2.0",
+    "@types/isomorphic-fetch": "^0.0.34",
+    "@types/webpack": "^4.4.9",
+    "ethereumjs-util": "^5.2.0",
+    "isomorphic-fetch": "^2.2.1",
+    "safe-buffer": "^5.1.2",
+    "web3-eth-accounts": "^1.0.0-beta.36",
+    "web3-utils": "^1.0.0-beta.36"
+  },
+  "scripts": {
+    "clean": "rm -rf 'dist/**/*'",
+    "build": "npm-run-all clean build:*",
+    "build:cjs": "tsc --listEmittedFiles",
+    "build:browser": "webpack",
+    "preversion": "yarn build && git add -A dist",
+    "test": "mocha 'test/**/*.spec.ts'"
+  }
+}
