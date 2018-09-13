@@ -1,7 +1,6 @@
-import fetch from "isomorphic-fetch";
-import sha3 from "web3-utils/src/soliditySha3";
+import axios from "axios";
 import { SignStrategy } from "../types";
-import { deepFlatten } from "../utils";
+import { reyHash } from "../utils";
 
 /**
  * Returns a new SignStrategy that delegates the signature process into
@@ -23,18 +22,17 @@ export default function apiSignHashFactory(o: IOpts): SignStrategy {
     transformResponseBody: (data: any) => data.signature,
   }, o);
   return async (...data: any[]) => {
-    const hash = sha3(...deepFlatten(data));
-    const res = await fetch(opts.endpoint, opts.transformRequest({
+    const res = await axios(opts.transformRequest({
       method: "POST",
+      url: opts.endpoint,
       headers: { "content-type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ hash }),
+      body: JSON.stringify({ hash: reyHash(data) }),
     }));
-    const body = await res.json()
-    if (!res.ok) {
-      const error = body.error || body.message || body;
+    if (res.statusText !== "OK") {
+      const error = res.data.error || res.data.message || res.data;
       throw new Error(`api sign error: ${res.statusText} ${error}`);
     }
-    return opts.transformResponseBody(body);
+    return opts.transformResponseBody(res.data);
   }
 }
 
