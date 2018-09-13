@@ -169,35 +169,36 @@ export function recoverSignatureSeed(obj: { toABI: () => any[] }) {
  * @param element
  * @param sign
  */
-export async function signAgain(entity: any, sign: SignStrategy) {
+export async function signAgain<T>(entity: any, sign: SignStrategy, clazz?: any): Promise<T> {
   // FIXME: Add typings to entity: Check for constructor that accepts signature
   const seed = recoverSignatureSeed(entity);
   const signature = await sign(...seed);
-  const Clazz = entity.constructor;
-  return new Clazz(Object.assign({}, entity, { signature }));
+  return new clazz(Object.assign({}, entity, { signature }));
 }
 
 /**
- * Returns a prefixed hex string representing the provided byte array.
- * @param bytes
+ * Returns a url-friendly base64 string of the provided data
+ * @param data
  */
-export function bytesToHex(bytes: Uint8Array | number[]) {
-  const hex = [];
-  for (let i = 0; i < bytes.length; i++) {
-    hex.push((bytes[i] >>> 4).toString(16));
-    hex.push((bytes[i] & 0xF).toString(16));
-  }
-  return '0x' + hex.join("");
+export function base64url(data: any) {
+  return Buffer.from(JSON.stringify(data))
+    .toString("base64")
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
 }
 
 /**
- * Returns a random hex string of the provided bytelength
- * @param byteLength How many bytes to include in the result.
+ * Returns an unsigned JWT with the provided payload.
+ * @param payload
  */
-export function randomHex(byteLength: number) {
-  const bytes = new Uint8Array(byteLength);
-  // FIXME: This should work on node-contexts and browser-contexts
-  // FIXME: window.crypto might not be available
-  window.crypto.getRandomValues(bytes);
-  return bytesToHex(bytes);
+export function encodeUnsignedJwt(payload: any): string {
+  const headers = { typ: "JWT", alg: "none" };
+  const parts = [headers, payload, ""];
+  return parts.map((p) => p ? base64url(p) : "").join(".");
+}
+
+export function reyHash(data: any[]) {
+  const soliditySha3 = require("web3-utils/src/soliditySha3");
+  return soliditySha3(...deepFlatten(data));
 }
