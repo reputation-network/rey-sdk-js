@@ -94,4 +94,5 @@ export declare function base64url(data: any): string;
  * @param payload
  */
 export declare function encodeUnsignedJwt(payload: any): string;
+export declare function decodeUnsignedJwt<T = any>(jwt: string): T;
 export declare function reyHash(data: any[]): any;

@@ -199,6 +199,11 @@ function encodeUnsignedJwt(payload) {
     return parts.map((p) => p ? base64url(p) : "").join(".");
 }
 exports.encodeUnsignedJwt = encodeUnsignedJwt;
+function decodeUnsignedJwt(jwt) {
+    const [headers, payload, signature] = jwt.split(".");
+    return JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
+}
+exports.decodeUnsignedJwt = decodeUnsignedJwt;
 function reyHash(data) {
     const soliditySha3 = require("web3-utils/src/soliditySha3");
     return soliditySha3(...deepFlatten(data));

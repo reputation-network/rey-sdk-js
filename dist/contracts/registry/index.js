@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const web3_eth_contract_1 = __importDefault(require("web3-eth-contract"));
 class RegistryContract {
     constructor(provider, address) {
-        this.ABI = require("./abi");
+        this.ABI = require("./abi").default;
         web3_eth_contract_1.default.setProvider(provider);
         this.registry = new web3_eth_contract_1.default(this.ABI, address);
     }
