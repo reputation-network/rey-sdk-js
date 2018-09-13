@@ -2,7 +2,7 @@ import Contract from "web3-eth-contract";
 
 export default class RegistryContract {
   private readonly registry: Contract;
-  private readonly ABI = require("./abi");
+  private readonly ABI = require("./abi").default;
 
   constructor(provider: string, address: string) {
     Contract.setProvider(provider);
