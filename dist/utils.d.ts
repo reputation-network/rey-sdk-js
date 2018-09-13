@@ -83,14 +83,15 @@ export declare function recoverSignatureSeed(obj: {
  * @param element
  * @param sign
  */
-export declare function signAgain(entity: any, sign: SignStrategy): Promise<any>;
+export declare function signAgain<T>(entity: any, sign: SignStrategy, clazz?: any): Promise<T>;
 /**
- * Returns a prefixed hex string representing the provided byte array.
- * @param bytes
+ * Returns a url-friendly base64 string of the provided data
+ * @param data
  */
-export declare function bytesToHex(bytes: Uint8Array | number[]): string;
+export declare function base64url(data: any): string;
 /**
- * Returns a random hex string of the provided bytelength
- * @param byteLength How many bytes to include in the result.
+ * Returns an unsigned JWT with the provided payload.
+ * @param payload
  */
-export declare function randomHex(byteLength: number): string;
+export declare function encodeUnsignedJwt(payload: any): string;
+export declare function reyHash(data: any[]): any;

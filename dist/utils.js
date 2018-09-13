@@ -168,39 +168,40 @@ exports.recoverSignatureSeed = recoverSignatureSeed;
  * @param element
  * @param sign
  */
-function signAgain(entity, sign) {
+function signAgain(entity, sign, clazz) {
     return __awaiter(this, void 0, void 0, function* () {
         // FIXME: Add typings to entity: Check for constructor that accepts signature
         const seed = recoverSignatureSeed(entity);
         const signature = yield sign(...seed);
-        const Clazz = entity.constructor;
-        return new Clazz(Object.assign({}, entity, { signature }));
+        return new clazz(Object.assign({}, entity, { signature }));
     });
 }
 exports.signAgain = signAgain;
 /**
- * Returns a prefixed hex string representing the provided byte array.
- * @param bytes
+ * Returns a url-friendly base64 string of the provided data
+ * @param data
  */
-function bytesToHex(bytes) {
-    const hex = [];
-    for (let i = 0; i < bytes.length; i++) {
-        hex.push((bytes[i] >>> 4).toString(16));
-        hex.push((bytes[i] & 0xF).toString(16));
-    }
-    return '0x' + hex.join("");
+function base64url(data) {
+    return Buffer.from(JSON.stringify(data))
+        .toString("base64")
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
 }
-exports.bytesToHex = bytesToHex;
+exports.base64url = base64url;
 /**
- * Returns a random hex string of the provided bytelength
- * @param byteLength How many bytes to include in the result.
+ * Returns an unsigned JWT with the provided payload.
+ * @param payload
  */
-function randomHex(byteLength) {
-    const bytes = new Uint8Array(byteLength);
-    // FIXME: This should work on node-contexts and browser-contexts
-    // FIXME: window.crypto might not be available
-    window.crypto.getRandomValues(bytes);
-    return bytesToHex(bytes);
+function encodeUnsignedJwt(payload) {
+    const headers = { typ: "JWT", alg: "none" };
+    const parts = [headers, payload, ""];
+    return parts.map((p) => p ? base64url(p) : "").join(".");
 }
-exports.randomHex = randomHex;
+exports.encodeUnsignedJwt = encodeUnsignedJwt;
+function reyHash(data) {
+    const soliditySha3 = require("web3-utils/src/soliditySha3");
+    return soliditySha3(...deepFlatten(data));
+}
+exports.reyHash = reyHash;
 //# sourceMappingURL=utils.js.map

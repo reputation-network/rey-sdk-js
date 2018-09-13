@@ -11,8 +11,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const isomorphic_fetch_1 = __importDefault(require("isomorphic-fetch"));
-const soliditySha3_1 = __importDefault(require("web3-utils/src/soliditySha3"));
+const axios_1 = __importDefault(require("axios"));
 const utils_1 = require("../utils");
 /**
  * Returns a new SignStrategy that delegates the signature process into
@@ -34,18 +33,17 @@ function apiSignHashFactory(o) {
         transformResponseBody: (data) => data.signature,
     }, o);
     return (...data) => __awaiter(this, void 0, void 0, function* () {
-        const hash = soliditySha3_1.default(...utils_1.deepFlatten(data));
-        const res = yield isomorphic_fetch_1.default(opts.endpoint, opts.transformRequest({
+        const res = yield axios_1.default(opts.transformRequest({
             method: "POST",
+            url: opts.endpoint,
             headers: { "content-type": "application/json; charset=utf-8" },
-            body: JSON.stringify({ hash }),
+            body: JSON.stringify({ hash: utils_1.reyHash(data) }),
         }));
-        const body = yield res.json();
-        if (!res.ok) {
-            const error = body.error || body.message || body;
+        if (res.statusText !== "OK") {
+            const error = res.data.error || res.data.message || res.data;
             throw new Error(`api sign error: ${res.statusText} ${error}`);
         }
-        return opts.transformResponseBody(body);
+        return opts.transformResponseBody(res.data);
     });
 }
 exports.default = apiSignHashFactory;

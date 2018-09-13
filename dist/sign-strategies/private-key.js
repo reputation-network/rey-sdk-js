@@ -18,13 +18,13 @@ const utils_1 = require("../utils");
  * Returns a sign strategy that signs data with the provided privateKey
  * @param privateKey
  */
-function privateKeySignStrategy(privateKey) {
+function privateKeySignStrategyFactory(privateKey) {
     const accounts = new web3_eth_accounts_1.default();
-    const account = accounts.fromPrivateKey(privateKey);
+    const account = accounts.privateKeyToAccount(privateKey);
     return (...data) => __awaiter(this, void 0, void 0, function* () {
         const { signature } = account.sign(soliditySha3_1.default(...utils_1.deepFlatten(data)));
         return signature;
     });
 }
-exports.default = privateKeySignStrategy;
+exports.default = privateKeySignStrategyFactory;
 //# sourceMappingURL=private-key.js.map
