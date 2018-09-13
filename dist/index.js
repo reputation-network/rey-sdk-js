@@ -15,6 +15,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 exports.App = app_1.default;
+const contracts_1 = __importDefault(require("./contracts"));
+exports.Contract = contracts_1.default;
 const SignStrategies = __importStar(require("./sign-strategies"));
 exports.SignStrategies = SignStrategies;
 const Utils = __importStar(require("./utils"));
