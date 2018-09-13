@@ -20,12 +20,13 @@
   },
   "dependencies": {
     "@types/ethereumjs-util": "^5.2.0",
-    "@types/isomorphic-fetch": "^0.0.34",
     "@types/webpack": "^4.4.9",
+    "axios": "^0.18.0",
     "ethereumjs-util": "^5.2.0",
-    "isomorphic-fetch": "^2.2.1",
     "safe-buffer": "^5.1.2",
     "web3-eth-accounts": "^1.0.0-beta.36",
+    "web3-eth-contract": "^1.0.0-beta.36",
+    "web3-eth-personal": "^1.0.0-beta.36",
     "web3-utils": "^1.0.0-beta.36"
   },
   "scripts": {

@@ -15,7 +15,7 @@ declare module "web3-eth-accounts" {
   export default class Accounts {
     constructor(provider?: any);
     create(entropy?: string): Account;
-    fromPrivateKey(privateKey: string): Account;
+    privateKeyToAccount(privateKey: string): Account;
   }
 }
 
