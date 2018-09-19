@@ -33,7 +33,7 @@ export default function apiSignHashFactory(o: IOpts): SignStrategy {
       throw new Error(`api sign error: ${res.statusText} ${error}`);
     }
     return opts.transformResponseBody(res.data);
-  }
+  };
 }
 
 interface IOpts {

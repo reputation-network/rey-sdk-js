@@ -1,6 +1,6 @@
 import Accounts from "web3-eth-accounts";
 import sha3 from "web3-utils/src/soliditySha3";
-import { SignStrategy } from "../types"
+import { SignStrategy } from "../types";
 import { deepFlatten } from "../utils";
 
 /**
@@ -13,5 +13,5 @@ export default function privateKeySignStrategyFactory(privateKey: string): SignS
   return async (...data: any[]) => {
     const {signature} = account.sign(sha3(...deepFlatten(data)));
     return signature;
-  }
+  };
 }

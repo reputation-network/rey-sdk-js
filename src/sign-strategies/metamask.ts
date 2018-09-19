@@ -21,7 +21,7 @@ export default async function metamaskSign(...data: any[]) {
 }
 
 type Provider = any; // FIXME: This should be a proper type
-type TypedData = { type: string, name: string, value: string };
+interface TypedData { type: string; name: string; value: string; }
 
 function getMetamaskProvider(): Provider {
   const w: any = window; // This allows us to inspect the window ignoring the typescript typechecking

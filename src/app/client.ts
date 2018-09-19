@@ -13,12 +13,12 @@ export default class AppClient {
     this.opts = buildOptions(opts);
   }
 
-  async manifestUrl(): Promise<string|null> {
+  public async manifestUrl(): Promise<string|null> {
     const manifestUrl = await this.opts.contract.getEntry(this.address);
     return manifestUrl || null;
   }
 
-  async manifest(): Promise<AppManifest|null> {
+  public async manifest(): Promise<AppManifest|null> {
     if (this.opts.manifestCache.has(this.address)) {
       return this.opts.manifestCache.get(this.address)!;
     }
@@ -33,7 +33,7 @@ export default class AppClient {
     return manifest;
   }
 
-  async extraReadPermissions(): Promise<PartialReadPermission[]> {
+  public async extraReadPermissions(): Promise<PartialReadPermission[]> {
     const manifest = await this.manifest();
     if (!manifest) {
       throw new Error(`No manifest record found for ${this.address}`);
@@ -46,7 +46,7 @@ export default class AppClient {
       manifest.app_dependencies.map((dep: string) => {
         const depClient = new AppClient(dep, this.opts);
         return depClient.extraReadPermissions();
-      })
+      }),
     );
     return [
       ...directDependencies,
@@ -54,7 +54,7 @@ export default class AppClient {
     ];
   }
 
-  async query(params: AppParams) {
+  public async query(params: AppParams) {
     const manifest = await this.manifest();
     if (!manifest) {
       throw new Error(`No manifest record found for ${this.address}`);

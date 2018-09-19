@@ -1,11 +1,11 @@
-import { extractIndexOrProperty, isNumeric, isSignature, normalizeSignature } from "../utils";
 import { RsvSignature } from "../types";
-import ReadPermission from "./read-permission"
+import { extractIndexOrProperty, isNumeric, isSignature, normalizeSignature } from "../utils";
+import ReadPermission from "./read-permission";
 import Session from "./session";
 
 export default class Request {
   public readonly readPermission: ReadPermission;
-  public readonly session: Session
+  public readonly session: Session;
   public readonly counter: string;
   public readonly value: string;
   public readonly signature: RsvSignature;
@@ -30,6 +30,6 @@ export default class Request {
       this.counter,
       this.value,
       this.signature,
-    ]
+    ];
   }
 }

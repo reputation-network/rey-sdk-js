@@ -1,6 +1,6 @@
+import { AppParams, ReadPermission, Request, Session } from "../structs";
 import { SignStrategy } from "../types";
-import { AppParams, Request, ReadPermission, Session } from "../structs";
-import { dummySignature, signAgain, reyHash } from "../utils";
+import { dummySignature, reyHash, signAgain } from "../utils";
 import { UnsignedAppParams, WithRequestHash } from "./types";
 
 export async function lazySignEntity<T>(
@@ -22,7 +22,7 @@ export async function buildAppParams(
   partialAppParams: UnsignedAppParams,
   opts: BuildAppParamsOpts,
 ): Promise<AppParams> {
-  let { request, extraReadPermissions } = partialAppParams;
+  const { request, extraReadPermissions } = partialAppParams;
   const readPermission = await lazySignEntity(
     request.readPermission, ReadPermission, opts.subjectSignStrategy);
   const session = await lazySignEntity(
@@ -47,7 +47,7 @@ export async function buildAppParamsWithHash(
     request: {
       ...appParams.request,
       hash: reyHash(appParams.request.toABI()),
-    }
+    },
   };
 }
 

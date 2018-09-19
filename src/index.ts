@@ -10,4 +10,4 @@ export {
   Contract,
   SignStrategies,
   Utils,
-}
+};

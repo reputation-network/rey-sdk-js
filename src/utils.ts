@@ -1,4 +1,4 @@
-import { Address, HexString, SignStrategy, RsvSignature, Signature } from "./types";
+import { Address, HexString, RsvSignature, Signature, SignStrategy } from "./types";
 
 /**
  * Determines whether the provided value is strictly a number or a
@@ -69,7 +69,7 @@ export function isRsvSignature(signature: any): signature is RsvSignature {
  * @see {@link isRsvSignature}
  */
 export function isSignature(signature: any): signature is Signature {
-  return isHexString(signature, 65) || isRsvSignature(signature)
+  return isHexString(signature, 65) || isRsvSignature(signature);
 }
 
 /**
@@ -119,7 +119,7 @@ export function extractIndexOrProperty<T = any>(
     throw new TypeError(`${mixedName} is missing ${propertyName} property`);
   }
   if (validation && !validation(value)) {
-    throw new TypeError(`wrong value for ${mixedName} ${propertyName}`)
+    throw new TypeError(`wrong value for ${mixedName} ${propertyName}`);
   }
   return value;
 }
@@ -198,7 +198,7 @@ export function encodeUnsignedJwt(payload: any): string {
   return parts.map((p) => p ? base64url(p) : "").join(".");
 }
 
-export function decodeUnsignedJwt<T=any>(jwt: string): T {
+export function decodeUnsignedJwt<T= any>(jwt: string): T {
   const [headers, payload, signature]  = jwt.split(".");
   return JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
 }

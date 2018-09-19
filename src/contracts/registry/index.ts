@@ -9,11 +9,11 @@ export default class RegistryContract {
     this.registry = new Contract(this.ABI, address);
   }
 
-  getEntry(address: string): Promise<string> {
+  public getEntry(address: string): Promise<string> {
     return this.registry.methods.getEntry(address).call();
   }
 
-  setEntry(address: string, manifestUrl: string): Promise<void> {
+  public setEntry(address: string, manifestUrl: string): Promise<void> {
     return this.registry.methods.setEntry(manifestUrl).send({ from: address });
   }
 }
