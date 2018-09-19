@@ -3,7 +3,7 @@ import ReadPermission from "../../src/structs/read-permission";
 import Request from "../../src/structs/request";
 import Session from "../../src/structs/session";
 
-describe("ReadPermission", () => {
+describe("Request", () => {
   const reader = `0x${"a".repeat(40)}`;
   const source = `0x${"b".repeat(40)}`;
   const subject = `0x${"c".repeat(40)}`;
@@ -25,68 +25,66 @@ describe("ReadPermission", () => {
   describe("constructor", () => {
     it("throws error if counter is not numeric", () => {
       const createRequest = () => new Request({ ...descriptorObj, counter: "asdf" });
-      expect(createRequest).to.throw(TypeError, /request.+counter/)
-    })
+      expect(createRequest).to.throw(TypeError, /request.+counter/);
+    });
     it("throws error if value is not numeric", () => {
       const createRequest = () => new Request({ ...descriptorObj, value: "asdf" });
-      expect(createRequest).to.throw(TypeError, /request.+value/)
-    })
+      expect(createRequest).to.throw(TypeError, /request.+value/);
+    });
     it("throws error if read permission is not valid", () => {
       const createRp = () => new Request({ ...descriptorObj, readPermission: {} });
-      expect(createRp).to.throw(TypeError, /readPermission/)
-    })
+      expect(createRp).to.throw(TypeError, /readPermission/);
+    });
     it("throws error if session is not valid", () => {
       const createRp = () => new Request({ ...descriptorObj, session: {} });
-      expect(createRp).to.throw(TypeError, /session/)
-    })
+      expect(createRp).to.throw(TypeError, /session/);
+    });
     it("throws error if signature is not a valid signature strcutre", () => {
       const createRequest1 = () => new Request({ ...descriptorObj, signature: `0x${"a".repeat(64)}` });
       expect(createRequest1).to.throw(TypeError, /request.+signature/);
       const createRequest2 = () => new Request({ ...descriptorObj, signature: descriptorArr.concat(["0xad"]) });
       expect(createRequest2).to.throw(TypeError, /request.+signature/);
-    })
-    it("creates a frozen instance", () => {
-      expect(new Request(descriptorObj)).to.be.frozen;
-    })
+    });
+    it("creates a frozen instance", () => expect(new Request(descriptorObj)).to.be.frozen);
     context("with an object descriptor", () => {
       it("stores its values", () => {
         expect(new Request(descriptorObj)).to.deep.equal(descriptorObj);
-      })
+      });
       it("transforms rpc signatures into rsv signatures", () => {
         expect(new Request({ ...descriptorObj, signature: signatureHex }))
           .to.deep.equal(descriptorObj);
-      })
-    })
+      });
+    });
     context("with an array descriptor", () => {
       it("stores its values and allows access by property name", () => {
-        expect(new Request(descriptorArr)).to.deep.equal(descriptorObj)
+        expect(new Request(descriptorArr)).to.deep.equal(descriptorObj);
       });
       it("transforms rpc signatures into rsv signatures", () => {
         expect(new Request([readPermissionArr, sessionArr, counter, value, signatureHex]))
-          .to.deep.equal(descriptorObj)
-      })
-    })
-  })
+          .to.deep.equal(descriptorObj);
+      });
+    });
+  });
 
   describe("#readPermission", () => {
     it("is a ReadPermission instance", () => {
       const request = new Request(descriptorObj);
       expect(request.readPermission).to.be.an.instanceOf(ReadPermission);
-    })
-  })
+    });
+  });
 
   describe("#session", () => {
     it("is a Session instance", () => {
       const request = new Request(descriptorObj);
       expect(request.session).to.be.an.instanceOf(Session);
-    })
-  })
+    });
+  });
 
   describe("#toABI()", () => {
     it("returns an array with the object properties", () => {
       const request = new Request(descriptorObj);
       expect(request.toABI()).to.deep
         .equal([readPermissionArr, sessionArr, counter, value, signatureRsv]);
-    })
-  })
+    });
+  });
 });

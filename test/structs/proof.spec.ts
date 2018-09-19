@@ -28,7 +28,7 @@ describe("Proof", () => {
       expect(createProof).to.throw(TypeError, /session/);
     });
     it("throws error if signature is not a valid signature strcutre", () => {
-      const createProof1 = () => new Proof({ ...descriptorObj, signature: `0x${"a".repeat(64)}` });;
+      const createProof1 = () => new Proof({ ...descriptorObj, signature: `0x${"a".repeat(64)}` });
       expect(createProof1).to.throw(TypeError, /proof.+signature/);
       const createProof2 = () => new Proof({ ...descriptorObj, signature: descriptorArr.concat(["0xad"]) });
       expect(createProof2).to.throw(TypeError, /proof.+signature/);
@@ -42,7 +42,7 @@ describe("Proof", () => {
         expect(new Proof({ ...descriptorObj, signature: signatureHex }))
           .to.deep.equal(descriptorObj);
       });
-    })
+    });
     context("with an array descriptor", () => {
       it("stores its values and allows access by property name", () => {
         expect(new Proof(descriptorArr)).to.deep.equal(descriptorObj);

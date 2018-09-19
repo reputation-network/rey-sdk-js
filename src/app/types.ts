@@ -50,6 +50,12 @@ export interface UnsignedAppParams<R= UnsignedReadPermission, S= UnsignedSession
   extraReadPermissions: R[];
 }
 
+export interface UnsignedWritePermission {
+  writer: string;
+  subject: string;
+  signature?: Signature;
+}
+
 export interface WithRequestHash {
   request: { hash: string };
 }
