@@ -13,11 +13,16 @@ export default class AppClient {
     this.opts = buildOptions(opts);
   }
 
+  async manifestUrl(): Promise<string|null> {
+    const manifestUrl = await this.opts.contract.getEntry(this.address);
+    return manifestUrl || null;
+  }
+
   async manifest(): Promise<AppManifest|null> {
     if (this.opts.manifestCache.has(this.address)) {
       return this.opts.manifestCache.get(this.address)!;
     }
-    const manifestUrl = await this.opts.contract.getEntry(this.address);
+    const manifestUrl = await this.manifestUrl();
     if (!manifestUrl) {
       return null;
     }
