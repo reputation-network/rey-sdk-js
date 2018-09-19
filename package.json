@@ -15,6 +15,7 @@
     "nyc": "^13.0.1",
     "ts-loader": "^5.0.0",
     "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
     "typescript": "^2.9.2",
     "webpack": "^4.17.2",
     "webpack-cli": "^3.1.0"
@@ -35,6 +36,7 @@
     "build": "npm-run-all clean build:*",
     "build:cjs": "tsc --listEmittedFiles",
     "build:browser": "webpack",
+    "lint": "tslint -p .",
     "preversion": "yarn build && git add -A dist",
     "test": "mocha 'test/**/*.spec.ts'",
     "test-ci": "NODE_ENV=test nyc mocha \"test/**/*.spec.ts\""
