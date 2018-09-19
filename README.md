@@ -1,4 +1,8 @@
 # REY SDK for JavaScript
+[![Build Status][travis-image]][travis-url]
+[![Coverage][codecov-image]][codecov-url]
+[![Dependency Status][depstat-image]][depstat-url]
+
 > :warning: **WARNING:** This project is still in alpha, so the SDK interface might change
 
 ```
@@ -24,3 +28,10 @@ $ yarn test
 
 ## LICENSE
 MIT © 2018 [Reputation Network](./LICENSE)
+
+[travis-image]: https://travis-ci.org/reputation-network/rey-sdk-js.svg?branch=master
+[travis-url]: https://travis-ci.org/reputation-network/rey-sdk-js
+[codecov-image]: https://codecov.io/github/reputation-network/rey-sdk-js/coverage.svg?branch=master
+[codecov-url]: https://codecov.io/github/reputation-network/rey-sdk-js?branch=master
+[depstat-image]: https://img.shields.io/david/reputation-network/rey-sdk-js/master.svg
+[depstat-url]: https://david-dm.org/reputation-network/rey-sdk-js
