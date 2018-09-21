@@ -148,7 +148,8 @@ export function deepFlatten(obj: any): any[] {
  * Builds the array used for generating the signature of any ABI
  * serializable object.
  * @param obj
- * @throws TypeError if provided object doesn't have a toABI method.
+ * @throws {TypeError} if provided object doesn't have a toABI method.
+ * @throws {TypeError} if toABI() doesn't return a signatre in its last position
  */
 export function recoverSignatureSeed(obj: { toABI: () => any[] }) {
   if (typeof obj.toABI !== "function") {
@@ -156,8 +157,12 @@ export function recoverSignatureSeed(obj: { toABI: () => any[] }) {
   }
   // By REY standards, when serializing to ABI, signature is always on
   // the last position of the serialized entity, so we need to remove it
-  const seed = obj.toABI().slice(0, -1);
-  return deepFlatten(seed) as Array<string | number>;
+  const abi = obj.toABI();
+  const signature = abi.pop();
+  if (!isSignature(signature)) {
+    throw new Error(`Last element of ABI serialized object was not a signature`);
+  }
+  return deepFlatten(abi) as Array<string | number>;
 }
 
 /**
