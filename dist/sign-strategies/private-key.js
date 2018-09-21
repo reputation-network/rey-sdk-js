@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const web3_eth_accounts_1 = __importDefault(require("web3-eth-accounts"));
-const soliditySha3_1 = __importDefault(require("web3-utils/src/soliditySha3"));
 const utils_1 = require("../utils");
 /**
  * Returns a sign strategy that signs data with the provided privateKey
@@ -22,7 +21,8 @@ function privateKeySignStrategyFactory(privateKey) {
     const accounts = new web3_eth_accounts_1.default();
     const account = accounts.privateKeyToAccount(privateKey);
     return (...data) => __awaiter(this, void 0, void 0, function* () {
-        const { signature } = account.sign(soliditySha3_1.default(...utils_1.deepFlatten(data)));
+        const msg = utils_1.reyHash(data);
+        const { signature } = account.sign(msg);
         return signature;
     });
 }

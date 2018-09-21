@@ -7,11 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const soliditySha3_1 = __importDefault(require("web3-utils/src/soliditySha3"));
 const utils_1 = require("../utils");
 /**
  * Delegates the sign process into the metamask browser addon
@@ -25,8 +21,8 @@ function metamaskSign(...data) {
         if (accounts.length === 0) {
             throw new Error("No accounts found on metamask");
         }
-        const hash = soliditySha3_1.default(...utils_1.deepFlatten(data));
-        return signTypedData(provider, [{ type: "bytes", name: "REY Signature", value: hash }], accounts[0]);
+        const msg = utils_1.reyHash(data);
+        return signTypedData(provider, [{ type: "bytes", name: "REY Signature", value: msg }], accounts[0]);
     });
 }
 exports.default = metamaskSign;

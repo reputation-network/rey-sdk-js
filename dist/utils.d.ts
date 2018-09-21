@@ -1,4 +1,4 @@
-import { Address, HexString, SignStrategy, RsvSignature, Signature } from "./types";
+import { Address, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
 /**
  * Determines whether the provided value is strictly a number or a
  * string representing a number (radix 10)
@@ -36,11 +36,17 @@ export declare function isRsvSignature(signature: any): signature is RsvSignatur
  */
 export declare function isSignature(signature: any): signature is Signature;
 /**
- * Returns the rsv-formatted version of the given signature.
+ * Returns the rsv-array-formatted version of the given signature.
  * @param signature
  * @throws if provided value is not a known signature format
  */
 export declare function normalizeSignature(signature: any): RsvSignature;
+/**
+ * Returns a rpc formatted signatrue version of the given signature.
+ * @param signature
+ * @throws if provided value is not a known signature format
+ */
+export declare function toRpcSignature(signature: any): RpcSignature;
 /**
  * Returns the value for the given propertyName or index from the provided
  * mixed. If both keys have a value, propertyName value will be returned.
@@ -69,7 +75,8 @@ export declare function deepFlatten(obj: any): any[];
  * Builds the array used for generating the signature of any ABI
  * serializable object.
  * @param obj
- * @throws TypeError if provided object doesn't have a toABI method.
+ * @throws {TypeError} if provided object doesn't have a toABI method.
+ * @throws {TypeError} if toABI() doesn't return a signatre in its last position
  */
 export declare function recoverSignatureSeed(obj: {
     toABI: () => any[];

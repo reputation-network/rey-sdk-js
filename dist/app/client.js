@@ -19,12 +19,18 @@ class AppClient {
         this.address = address;
         this.opts = buildOptions(opts);
     }
+    manifestUrl() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const manifestUrl = yield this.opts.contract.getEntry(this.address);
+            return manifestUrl || null;
+        });
+    }
     manifest() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.opts.manifestCache.has(this.address)) {
                 return this.opts.manifestCache.get(this.address);
             }
-            const manifestUrl = yield this.opts.contract.getEntry(this.address);
+            const manifestUrl = yield this.manifestUrl();
             if (!manifestUrl) {
                 return null;
             }

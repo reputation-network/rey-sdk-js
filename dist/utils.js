@@ -76,7 +76,7 @@ function isSignature(signature) {
 }
 exports.isSignature = isSignature;
 /**
- * Returns the rsv-formatted version of the given signature.
+ * Returns the rsv-array-formatted version of the given signature.
  * @param signature
  * @throws if provided value is not a known signature format
  */
@@ -93,6 +93,23 @@ function normalizeSignature(signature) {
     }
 }
 exports.normalizeSignature = normalizeSignature;
+/**
+ * Returns a rpc formatted signatrue version of the given signature.
+ * @param signature
+ * @throws if provided value is not a known signature format
+ */
+function toRpcSignature(signature) {
+    if (isHexString(signature, 65)) {
+        return signature;
+    }
+    else if (isRsvSignature(signature)) {
+        return `0x${signature.map((p) => p.replace(/^0x/, "")).join("")}`;
+    }
+    else {
+        throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);
+    }
+}
+exports.toRpcSignature = toRpcSignature;
 /**
  * Returns the value for the given propertyName or index from the provided
  * mixed. If both keys have a value, propertyName value will be returned.
@@ -147,7 +164,8 @@ exports.deepFlatten = deepFlatten;
  * Builds the array used for generating the signature of any ABI
  * serializable object.
  * @param obj
- * @throws TypeError if provided object doesn't have a toABI method.
+ * @throws {TypeError} if provided object doesn't have a toABI method.
+ * @throws {TypeError} if toABI() doesn't return a signatre in its last position
  */
 function recoverSignatureSeed(obj) {
     if (typeof obj.toABI !== "function") {
@@ -155,8 +173,12 @@ function recoverSignatureSeed(obj) {
     }
     // By REY standards, when serializing to ABI, signature is always on
     // the last position of the serialized entity, so we need to remove it
-    const seed = obj.toABI().slice(0, -1);
-    return deepFlatten(seed);
+    const abi = obj.toABI();
+    const signature = abi.pop();
+    if (!isSignature(signature)) {
+        throw new Error(`Last element of ABI serialized object was not a signature`);
+    }
+    return deepFlatten(abi);
 }
 exports.recoverSignatureSeed = recoverSignatureSeed;
 /**

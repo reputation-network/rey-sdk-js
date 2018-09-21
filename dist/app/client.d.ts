@@ -6,6 +6,7 @@ export default class AppClient {
     readonly address: string;
     private readonly opts;
     constructor(address: string, opts?: IAppClientOptions);
+    manifestUrl(): Promise<string | null>;
     manifest(): Promise<AppManifest | null>;
     extraReadPermissions(): Promise<PartialReadPermission[]>;
     query(params: AppParams): Promise<any>;
