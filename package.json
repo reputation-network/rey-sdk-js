@@ -16,7 +16,7 @@
     "ts-loader": "^5.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.3",
     "webpack": "^4.17.2",
     "webpack-cli": "^3.1.0"
   },
@@ -24,7 +24,6 @@
     "@types/ethereumjs-util": "^5.2.0",
     "@types/webpack": "^4.4.9",
     "axios": "^0.18.0",
-    "ethereumjs-util": "^5.2.0",
     "safe-buffer": "^5.1.2",
     "web3-eth-accounts": "^1.0.0-beta.36",
     "web3-eth-contract": "^1.0.0-beta.36",
