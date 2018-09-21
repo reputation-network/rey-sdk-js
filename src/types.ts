@@ -9,3 +9,7 @@ export type Signature = RpcSignature | RsvSignature;
 
 //
 export type SignStrategy = (...args: any[]) => Promise<Signature>;
+export interface SignedEntity {
+  signature: Signature;
+  toABI(): any[];
+}

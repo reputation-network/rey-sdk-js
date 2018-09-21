@@ -1,4 +1,4 @@
-import { Address, HexString, RsvSignature, Signature, SignStrategy } from "./types";
+import { Address, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
 
 /**
  * Determines whether the provided value is strictly a number or a
@@ -73,7 +73,7 @@ export function isSignature(signature: any): signature is Signature {
 }
 
 /**
- * Returns the rsv-formatted version of the given signature.
+ * Returns the rsv-array-formatted version of the given signature.
  * @param signature
  * @throws if provided value is not a known signature format
  */
@@ -83,6 +83,21 @@ export function normalizeSignature(signature: any): RsvSignature {
   } else if (isHexString(signature, 65)) {
     const [, r, s, v] = /^0x(.{64})(.{64})(.{2})$/.exec(signature)!;
     return [`0x${r}`, `0x${s}`, `0x${v}`] as RsvSignature;
+  } else {
+    throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);
+  }
+}
+
+/**
+ * Returns a rpc formatted signatrue version of the given signature.
+ * @param signature
+ * @throws if provided value is not a known signature format
+ */
+export function toRpcSignature(signature: any): RpcSignature {
+  if (isHexString(signature, 65)) {
+    return signature;
+  } else if (isRsvSignature(signature)) {
+    return `0x${signature.map((p) => p.replace(/^0x/, "")).join("")}`;
   } else {
     throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);
   }

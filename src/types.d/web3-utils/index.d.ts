@@ -4,8 +4,9 @@ declare module "web3-utils/src/soliditySha3" {
   export default function soliditySha3(...args: Array<number|string|TV|TypeValue>): string;
 }
 
-declare module "web3-utils/src/utils" {
+declare module "web3-utils" {
   export function bytesToHex(mixed: any): string;
   export function toHex(mixed: any): string;
   export function utf8ToHex(mixed: any): string;
+  export function toChecksumAddress(address: string): string;
 }
