@@ -1,5 +1,4 @@
-import soliditySha3 from "web3-utils/src/soliditySha3";
-import { deepFlatten } from "../utils";
+import { reyHash } from "../utils";
 
 /**
  * Delegates the sign process into the metamask browser addon
@@ -12,10 +11,10 @@ export default async function metamaskSign(...data: any[]) {
   if (accounts.length === 0) {
     throw new Error("No accounts found on metamask");
   }
-  const hash = soliditySha3(...deepFlatten(data));
+  const msg = reyHash(data);
   return signTypedData(
     provider,
-    [{ type: "bytes", name: "REY Signature", value: hash }],
+    [{ type: "bytes", name: "REY Signature", value: msg }],
     accounts[0],
   );
 }
