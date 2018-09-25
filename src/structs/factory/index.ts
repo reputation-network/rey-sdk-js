@@ -1,5 +1,5 @@
 import { SignedEntity, SignStrategy } from "../../types";
-import { dummySignature, recoverSignatureSeed } from "../../utils";
+import { dummySignature, recoverSignatureSeed, toRpcSignature } from "../../utils";
 import AppParams from "../app-params";
 import Proof from "../proof";
 import ReadPermission from "../read-permission";
@@ -40,7 +40,7 @@ export async function build<T extends SignedEntity>(
   const sign = signBy[signer]!;
   let signature = (payload || {}).signature || dummySignature();
   const t = new clazz({ ...payload, signature });
-  if (!signature || signature === dummySignature()) {
+  if (!signature || toRpcSignature(signature) === toRpcSignature(dummySignature())) {
     signature = await sign(...recoverSignatureSeed(t));
   }
   return new clazz({ ...(t as any), signature });
