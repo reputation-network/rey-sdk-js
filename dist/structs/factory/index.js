@@ -35,7 +35,7 @@ function build(clazz, payload, signStrategy) {
         const sign = signBy[signer];
         let signature = (payload || {}).signature || utils_1.dummySignature();
         const t = new clazz(Object.assign({}, payload, { signature }));
-        if (!signature || signature === utils_1.dummySignature()) {
+        if (!signature || utils_1.toRpcSignature(signature) === utils_1.toRpcSignature(utils_1.dummySignature())) {
             signature = yield sign(...utils_1.recoverSignatureSeed(t));
         }
         return new clazz(Object.assign({}, t, { signature }));
