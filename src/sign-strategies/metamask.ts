@@ -1,56 +1,45 @@
 import { reyHash } from "../utils";
 
-/**
- * Delegates the sign process into the metamask browser addon
- * @param data Data to be signed
- * @throws {TypeError} if no metamask instance is found on the window context
- */
-export default async function metamaskSign(...data: any[]) {
-  const provider = await getMetamaskProvider();
-  const accounts = await getAccounts(provider);
-  if (accounts.length === 0) {
-    throw new Error("No accounts found on metamask");
-  }
-  const msg = reyHash(data);
-  return signTypedData(
-    provider,
-    [{ type: "bytes", name: "REY Signature", value: msg }],
-    accounts[0],
-  );
+export default function MetamaskPersonalSignStrategy() {
+  const web3CurrentProvider = getMetamaskProvider();
+  return async (...data: any[]) => {
+    const account = (await getAccounts(web3CurrentProvider))[0];
+    if (!account) {
+      throw new Error("No default account selected for metamask");
+    }
+    const msg = reyHash(data);
+    return personalSign(web3CurrentProvider, msg, account);
+  };
 }
 
-type Provider = any; // FIXME: This should be a proper type
-interface TypedData { type: string; name: string; value: string; }
-
-function getMetamaskProvider(): Provider {
+function getMetamaskProvider(): any {
   const w: any = window; // This allows us to inspect the window ignoring the typescript typechecking
   if (!w.web3 || !w.web3.currentProvider) {
     throw new TypeError("no global web3 provider found");
   } else if (w.web3.currentProvider.isMetaMask !== true) {
     throw new TypeError("global web3 provider is not MetaMask");
   }
-  return Promise.resolve(w.web3.currentProvider);
+  return w.web3.currentProvider;
 }
 
-function sendAsync<T>(provider: Provider, methodCall: any): Promise<T>  {
-  return new Promise((resolve, reject) => {
-    provider.sendAsync(methodCall,
-      (err: any, res: any) => err ? reject(err) : resolve(res.result),
-    );
-  });
-}
-
-function getAccounts(provider: Provider): Promise<string[]> {
+function getAccounts(provider: any): Promise<string[]> {
   return sendAsync<string[]>(provider, {
     method: "eth_accounts",
     params: [],
   });
 }
 
-function signTypedData(provider: Provider, data: TypedData[], from: string): Promise<string> {
-  return sendAsync(provider, {
-    method: "eth_signTypedData",
+function personalSign(provider: any, data: string, from: string): Promise<string> {
+  return sendAsync<string>(provider, {
+    method: "personal_sign",
     params: [data, from],
-    from,
+  });
+}
+
+function sendAsync<T>(provider: any, methodCall: any): Promise<T> {
+  return new Promise((resolve, reject) => {
+    provider.sendAsync(methodCall,
+      (err: any, res: any) => err ? reject(err) : resolve(res.result),
+    );
   });
 }

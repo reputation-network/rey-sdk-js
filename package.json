@@ -27,7 +27,6 @@
     "safe-buffer": "^5.1.2",
     "web3-eth-accounts": "^1.0.0-beta.36",
     "web3-eth-contract": "^1.0.0-beta.36",
-    "web3-eth-personal": "^1.0.0-beta.36",
     "web3-utils": "^1.0.0-beta.36"
   },
   "scripts": {
