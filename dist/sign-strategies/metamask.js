@@ -9,23 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
-/**
- * Delegates the sign process into the metamask browser addon
- * @param data Data to be signed
- * @throws {TypeError} if no metamask instance is found on the window context
- */
-function metamaskSign(...data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const provider = yield getMetamaskProvider();
-        const accounts = yield getAccounts(provider);
-        if (accounts.length === 0) {
-            throw new Error("No accounts found on metamask");
+function MetamaskPersonalSignStrategy() {
+    const web3CurrentProvider = getMetamaskProvider();
+    return (...data) => __awaiter(this, void 0, void 0, function* () {
+        const account = (yield getAccounts(web3CurrentProvider))[0];
+        if (!account) {
+            throw new Error("No default account selected for metamask");
         }
         const msg = utils_1.reyHash(data);
-        return signTypedData(provider, [{ type: "bytes", name: "REY Signature", value: msg }], accounts[0]);
+        return personalSign(web3CurrentProvider, msg, account);
     });
 }
-exports.default = metamaskSign;
+exports.default = MetamaskPersonalSignStrategy;
 function getMetamaskProvider() {
     const w = window; // This allows us to inspect the window ignoring the typescript typechecking
     if (!w.web3 || !w.web3.currentProvider) {
@@ -34,12 +29,7 @@ function getMetamaskProvider() {
     else if (w.web3.currentProvider.isMetaMask !== true) {
         throw new TypeError("global web3 provider is not MetaMask");
     }
-    return Promise.resolve(w.web3.currentProvider);
-}
-function sendAsync(provider, methodCall) {
-    return new Promise((resolve, reject) => {
-        provider.sendAsync(methodCall, (err, res) => err ? reject(err) : resolve(res.result));
-    });
+    return w.web3.currentProvider;
 }
 function getAccounts(provider) {
     return sendAsync(provider, {
@@ -47,11 +37,15 @@ function getAccounts(provider) {
         params: [],
     });
 }
-function signTypedData(provider, data, from) {
+function personalSign(provider, data, from) {
     return sendAsync(provider, {
-        method: "eth_signTypedData",
+        method: "personal_sign",
         params: [data, from],
-        from,
+    });
+}
+function sendAsync(provider, methodCall) {
+    return new Promise((resolve, reject) => {
+        provider.sendAsync(methodCall, (err, res) => err ? reject(err) : resolve(res.result));
     });
 }
 //# sourceMappingURL=metamask.js.map
