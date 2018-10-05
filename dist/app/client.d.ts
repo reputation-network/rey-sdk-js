@@ -1,6 +1,5 @@
 import { AxiosInstance } from "axios";
-import Contract from "../contracts";
-import { ManifestEntry } from "../contracts/registry";
+import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
 import { AppManifest, PartialReadPermission } from "./types";
 export default class AppClient {
@@ -17,6 +16,6 @@ export declare function buildOptions(opts: IAppClientOptions): Required<IAppClie
 interface IAppClientOptions {
     http?: AxiosInstance;
     manifestCache?: Map<string, AppManifest>;
-    contract?: Contract;
+    contract?: RegistryContract;
 }
 export {};

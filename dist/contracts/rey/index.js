@@ -12,21 +12,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const web3_eth_contract_1 = __importDefault(require("web3-eth-contract"));
-class RegistryContract {
+class ReyContract {
     constructor(provider, address, options) {
         this.ABI = require("./abi").default;
         web3_eth_contract_1.default.setProvider(provider);
-        this.registry = new web3_eth_contract_1.default(this.ABI, address, options);
+        this.contract = new web3_eth_contract_1.default(this.ABI, address, options);
     }
-    getEntry(address) {
+    validateRequest(request) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield this.registry.methods.getEntry(address).call();
-            return { url: result[0], hash: result[1] };
+            const arg = request.toABI();
+            return this.contract.methods.validateRequest(arg).call();
         });
     }
-    setEntry(address, entry) {
-        return this.registry.methods.setEntry(entry.url, entry.hash).send({ from: address });
+    cashout(...args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error("This method is not yet implemented");
+        });
+    }
+    fund(...args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error("This method is not yet implemented");
+        });
+    }
+    release(...args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error("This method is not yet implemented");
+        });
+    }
+    balance(...args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            throw new Error("This method is not yet implemented");
+        });
     }
 }
-exports.default = RegistryContract;
+exports.default = ReyContract;
 //# sourceMappingURL=index.js.map
