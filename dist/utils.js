@@ -42,13 +42,21 @@ function isHexString(str, byteLength) {
 }
 exports.isHexString = isHexString;
 /**
- * Determines whether the provided value is a valid address (hex prefixed string of 40 bytes)
+ * Determines whether the provided value is a valid address (hex prefixed string of 20 bytes)
  * @param str value to check
  */
 function isAddress(str) {
     return isHexString(str, 20);
 }
 exports.isAddress = isAddress;
+/**
+ * Determines whether the provided value is a valid hash (hex prefixed string of 32 bytes)
+ * @param str value to check
+ */
+function isHash(str) {
+    return isHexString(str, 32);
+}
+exports.isHash = isHash;
 /**
  * Determines whether the provided value is a valid rsv representation of
  * a signature, meaning:

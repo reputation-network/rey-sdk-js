@@ -12,6 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
+const safe_buffer_1 = require("safe-buffer");
+const web3_utils_1 = require("web3-utils");
 const contracts_1 = require("../contracts");
 const utils_1 = require("../utils");
 class AppClient {
@@ -19,10 +21,10 @@ class AppClient {
         this.address = address;
         this.opts = buildOptions(opts);
     }
-    manifestUrl() {
+    manifestEntry() {
         return __awaiter(this, void 0, void 0, function* () {
-            const manifestUrl = yield this.opts.contract.getEntry(this.address);
-            return manifestUrl || null;
+            const entry = yield this.opts.contract.getEntry(this.address);
+            return entry.url ? entry : null;
         });
     }
     manifest() {
@@ -30,12 +32,11 @@ class AppClient {
             if (this.opts.manifestCache.has(this.address)) {
                 return this.opts.manifestCache.get(this.address);
             }
-            const manifestUrl = yield this.manifestUrl();
-            if (!manifestUrl) {
+            const entry = yield this.manifestEntry();
+            if (!entry) {
                 return null;
             }
-            const res = yield this.opts.http.get(manifestUrl);
-            const manifest = res.data;
+            const manifest = yield this.getManifest(entry);
             // FIXME: Check `manifest` actually implements the AppManifest interface
             this.opts.manifestCache.set(this.address, manifest);
             return manifest;
@@ -72,6 +73,21 @@ class AppClient {
                 headers: { authorization: `bearer ${appReadToken}` },
             });
             return res.data;
+        });
+    }
+    getManifest(manifestEntry) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield this.opts.http.get(manifestEntry.url, { responseType: "arraybuffer" });
+            const responseHash = web3_utils_1.sha3(res.data);
+            if (responseHash !== manifestEntry.hash) {
+                throw new Error(`Manifest hash check failed for ${this.address}`);
+            }
+            try {
+                return JSON.parse(safe_buffer_1.Buffer.from(res.data).toString("utf8"));
+            }
+            catch (e) {
+                throw new Error(`Manifest parsing failed for ${this.address}`);
+            }
         });
     }
 }

@@ -1,4 +1,4 @@
-import { Address, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
+import { Address, Hash, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
 /**
  * Determines whether the provided value is strictly a number or a
  * string representing a number (radix 10)
@@ -14,10 +14,15 @@ export declare function isNumeric(val: any): boolean;
  */
 export declare function isHexString<L extends number = any>(str: any, byteLength?: number): str is HexString<L>;
 /**
- * Determines whether the provided value is a valid address (hex prefixed string of 40 bytes)
+ * Determines whether the provided value is a valid address (hex prefixed string of 20 bytes)
  * @param str value to check
  */
 export declare function isAddress(str: any): str is Address;
+/**
+ * Determines whether the provided value is a valid hash (hex prefixed string of 32 bytes)
+ * @param str value to check
+ */
+export declare function isHash(str: any): str is Hash;
 /**
  * Determines whether the provided value is a valid rsv representation of
  * a signature, meaning:
