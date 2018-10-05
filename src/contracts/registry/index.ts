@@ -10,9 +10,9 @@ export default class RegistryContract {
     this.registry = new Contract(this.ABI, address);
   }
 
-  public getEntry(address: string): Promise<ManifestEntry> {
-    const [url, hash] = this.registry.methods.getEntry(address).call();
-    return { url, hash };
+  public async getEntry(address: string): Promise<ManifestEntry> {
+    const result = await this.registry.methods.getEntry(address).call();
+    return { url: result[0], hash: result[1] };
   }
 
   public setEntry(address: string, entry: ManifestEntry): Promise<void> {
