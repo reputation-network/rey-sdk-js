@@ -26,7 +26,7 @@ describe("ReadPermission", () => {
       expect(createRp).to.throw(TypeError, /readPermission.+subject/);
     });
     it("throws error if manifest is not a valid hash", () => {
-      const createRp = () => new ReadPermission({ ...descriptorObj, subject: `0x${"a".repeat(63)}` });
+      const createRp = () => new ReadPermission({ ...descriptorObj, manifest: `0x${"a".repeat(63)}` });
       expect(createRp).to.throw(TypeError, /readPermission.+manifest/);
     });
     it("throws error if signature is not a valid signature strcutre", () => {
