@@ -1,4 +1,4 @@
-import { Address, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
+import { Address, Hash, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
 
 /**
  * Determines whether the provided value is strictly a number or a
@@ -39,11 +39,19 @@ export function isHexString<L extends number = any>(
 }
 
 /**
- * Determines whether the provided value is a valid address (hex prefixed string of 40 bytes)
+ * Determines whether the provided value is a valid address (hex prefixed string of 20 bytes)
  * @param str value to check
  */
 export function isAddress(str: any): str is Address {
   return isHexString(str, 20);
+}
+
+/**
+ * Determines whether the provided value is a valid hash (hex prefixed string of 32 bytes)
+ * @param str value to check
+ */
+export function isHash(str: any): str is Hash {
+  return isHexString(str, 32);
 }
 
 /**

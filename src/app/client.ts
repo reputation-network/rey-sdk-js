@@ -1,5 +1,8 @@
 import axios, { AxiosInstance } from "axios";
+import { Buffer } from "safe-buffer";
+import { sha3 } from "web3-utils";
 import Contract, { DevelopmentContract } from "../contracts";
+import { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
 import { encodeUnsignedJwt } from "../utils";
 import { AppManifest, PartialReadPermission } from "./types";
@@ -13,21 +16,20 @@ export default class AppClient {
     this.opts = buildOptions(opts);
   }
 
-  public async manifestUrl(): Promise<string|null> {
-    const manifestUrl = await this.opts.contract.getEntry(this.address);
-    return manifestUrl || null;
+  public async manifestEntry(): Promise<ManifestEntry|null> {
+    const entry = await this.opts.contract.getEntry(this.address);
+    return entry.url ? entry : null;
   }
 
   public async manifest(): Promise<AppManifest|null> {
     if (this.opts.manifestCache.has(this.address)) {
       return this.opts.manifestCache.get(this.address)!;
     }
-    const manifestUrl = await this.manifestUrl();
-    if (!manifestUrl) {
+    const entry = await this.manifestEntry();
+    if (!entry) {
       return null;
     }
-    const res = await this.opts.http.get(manifestUrl);
-    const manifest = res.data;
+    const manifest = await this.getManifest(entry);
     // FIXME: Check `manifest` actually implements the AppManifest interface
     this.opts.manifestCache.set(this.address, manifest);
     return manifest;
@@ -64,6 +66,20 @@ export default class AppClient {
       headers: { authorization: `bearer ${appReadToken}` },
     });
     return res.data;
+  }
+
+
+  private async getManifest(manifestEntry: ManifestEntry) {
+    const res = await this.opts.http.get(manifestUrl, { responseType: "arraybuffer" });
+    const responseHash = sha3(res.data);
+    if (responseHash !== manifestEntry.hash) {
+      throw new Error(`Manifest hash check failed for ${this.address}`);
+    }
+    try {
+      return JSON.parse(Buffer.from(res.data));
+    } catch (e) {
+      throw new Error(`Manifest parsing failed for ${this.address}`);
+    }
   }
 }
 

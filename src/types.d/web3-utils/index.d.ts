@@ -9,4 +9,5 @@ declare module "web3-utils" {
   export function toHex(mixed: any): string;
   export function utf8ToHex(mixed: any): string;
   export function toChecksumAddress(address: string): string;
+  export function sha3(buffer: Buffer): string;
 }

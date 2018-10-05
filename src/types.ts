@@ -1,10 +1,12 @@
 // Represents a prefixed hex string of L bytes
 export type HexString<L extends number> = string;
+// Represents an ethereum hash
+export type Hash = HexString<32>;
 // Represents an ethereum public address
 export type Address = HexString<40>;
 // Represents an ethereum signature
-export type RsvSignature = [ /*r: */ HexString<64>, /*s: */ HexString<64>, /*v: */ HexString<2>];
-export type RpcSignature = HexString<130>;
+export type RsvSignature = [ /*r: */ HexString<32>, /*s: */ HexString<32>, /*v: */ HexString<1>];
+export type RpcSignature = HexString<65>;
 export type Signature = RpcSignature | RsvSignature;
 
 //

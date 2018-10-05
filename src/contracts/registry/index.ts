@@ -1,4 +1,5 @@
 import Contract from "web3-eth-contract";
+import { Hash } from "../../types";
 
 export default class RegistryContract {
   private readonly registry: Contract;
@@ -9,11 +10,17 @@ export default class RegistryContract {
     this.registry = new Contract(this.ABI, address);
   }
 
-  public getEntry(address: string): Promise<string> {
-    return this.registry.methods.getEntry(address).call();
+  public getEntry(address: string): Promise<ManifestEntry> {
+    const [url, hash] = this.registry.methods.getEntry(address).call();
+    return { url, hash };
   }
 
-  public setEntry(address: string, manifestUrl: string): Promise<void> {
-    return this.registry.methods.setEntry(manifestUrl).send({ from: address });
+  public setEntry(address: string, entry: ManifestEntry): Promise<void> {
+    return this.registry.methods.setEntry(entry.url, entry.hash).send({ from: address });
   }
+}
+
+export interface ManifestEntry {
+  url: string;
+  hash: Hash;
 }
