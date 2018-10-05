@@ -17,4 +17,8 @@ declare module "web3-eth-contract" {
     constructor(abi: any, address?: string, opts?: TransactionOptions);
   }
   export default Contract;
+  export {
+    TransactionOptions,
+    Transaction,
+  }
 }

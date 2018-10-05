@@ -1,16 +1,44 @@
+import { TransactionOptions } from "web3-eth-contract";
 import RegistryContract from "./registry";
-export default RegistryContract;
+import ReyContract from "./rey";
 
-export function DevelopmentContract() {
-  return new RegistryContract(
-    "http://localhost:8545",
-    "0x556ED3bEaF6b3dDCb1562d3F30f79bF86fFC05B9",
-  );
+type Provider = string|any; // FIXME: This should be a proper type
+type ContractAddress = string | {registry: string, rey: string};
+
+export type Contract = RegistryContract & ReyContract;
+
+export default function SmartContract(
+  provider: Provider,
+  address: ContractAddress,
+  options?: TransactionOptions,
+) {
+  const registry = new RegistryContract(provider,
+    typeof address === "string" ? address : address.registry, options);
+  const rey = new ReyContract(provider,
+    typeof address === "string" ? address : address.rey, options);
+  return new Proxy<Contract>({} as any, {
+    get(target, prop, receiver) {
+      if (Reflect.has(rey, prop)) {
+        return Reflect.get(rey, prop, receiver);
+      } else if (Reflect.has(registry, prop)) {
+        return Reflect.get(registry, prop, receiver);
+      } else {
+        return undefined;
+      }
+    },
+  });
 }
 
-export function TestnetContract(nodeUrl: string) {
-  return new RegistryContract(
-    nodeUrl,
-    "0xC05f9be01592902e133F398998E783b6cbD93813",
-  );
+export function DevelopmentContract(options?: TransactionOptions) {
+  return SmartContract("http://localhost:8545", {
+    registry: "0x556ED3bEaF6b3dDCb1562d3F30f79bF86fFC05B9",
+    rey: "0x76C19376b275A5d77858c6F6d5322311eEb92cf5",
+  }, options);
+}
+
+export function TestnetContract(provider: Provider, options?: TransactionOptions) {
+  return SmartContract(provider, {
+    registry: "0xC05f9be01592902e133F398998E783b6cbD93813",
+    rey: "0xF4f8787A17aBF8011Aef72dEa64bFBA1993E7F38",
+  }, options);
 }

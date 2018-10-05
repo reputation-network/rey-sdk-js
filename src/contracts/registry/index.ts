@@ -1,13 +1,13 @@
-import Contract from "web3-eth-contract";
+import Contract, { TransactionOptions } from "web3-eth-contract";
 import { Hash } from "../../types";
 
 export default class RegistryContract {
   private readonly registry: Contract;
   private readonly ABI = require("./abi").default;
 
-  constructor(provider: string, address: string) {
+  constructor(provider: string, address: string, options?: TransactionOptions) {
     Contract.setProvider(provider);
-    this.registry = new Contract(this.ABI, address);
+    this.registry = new Contract(this.ABI, address, options);
   }
 
   public async getEntry(address: string): Promise<ManifestEntry> {

@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { Buffer } from "safe-buffer";
 import { sha3 } from "web3-utils";
-import Contract, { DevelopmentContract } from "../contracts";
-import { ManifestEntry } from "../contracts/registry";
+import { DevelopmentContract } from "../contracts";
+import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
 import { encodeUnsignedJwt } from "../utils";
 import { AppManifest, PartialReadPermission } from "./types";
@@ -93,5 +93,5 @@ export function buildOptions(opts: IAppClientOptions): Required<IAppClientOption
 interface IAppClientOptions {
   http?: AxiosInstance;
   manifestCache?: Map<string, AppManifest>;
-  contract?: Contract;
+  contract?: RegistryContract;
 }
