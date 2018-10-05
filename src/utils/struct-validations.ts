@@ -33,7 +33,7 @@ export function validateSignature(data: HexString<any>, signature: RsvSignature,
 export function validateReadPermission(rp: ReadPermission) {
   assert(
     Number(rp.expiration) > Math.floor(Date.now() / 1000),
-    `readPermission is expired`,
+    `read permission is expired`,
   );
   try {
     const rpHash = reyHash(recoverSignatureSeed(rp));
