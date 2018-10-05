@@ -1,4 +1,4 @@
-import { Address, Hash, HexString, RpcSignature, RsvSignature, Signature, SignStrategy } from "./types";
+import { Address, Hash, HexString, RpcSignature, RsvSignature, Signature, SignedEntity, SignStrategy } from "../types";
 
 /**
  * Determines whether the provided value is strictly a number or a
@@ -174,7 +174,7 @@ export function deepFlatten(obj: any): any[] {
  * @throws {TypeError} if provided object doesn't have a toABI method.
  * @throws {TypeError} if toABI() doesn't return a signatre in its last position
  */
-export function recoverSignatureSeed(obj: { toABI: () => any[] }) {
+export function recoverSignatureSeed(obj: SignedEntity) {
   if (typeof obj.toABI !== "function") {
     throw new TypeError("Provided object can't be serialized into ABI");
   }
