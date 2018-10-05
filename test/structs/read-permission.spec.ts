@@ -5,11 +5,12 @@ describe("ReadPermission", () => {
   const reader = `0x${"a".repeat(40)}`;
   const source = `0x${"b".repeat(40)}`;
   const subject = `0x${"c".repeat(40)}`;
+  const manifest = `0x${"d".repeat(64)}`;
   const expiration = `${Math.floor(Date.now() / 1000) + 20 * 3600}`;
   const signatureRsv = [`0x${"3".repeat(64)}`, `0x${"4".repeat(64)}`, `0x${"2".repeat(2)}`];
   const signatureHex = `0x${"3".repeat(64)}${"4".repeat(64)}${"2".repeat(2)}`;
-  const descriptorObj = { reader, source, subject, expiration, signature: signatureRsv };
-  const descriptorArr = [reader, source, subject, expiration, signatureRsv];
+  const descriptorObj = { reader, source, subject, manifest, expiration, signature: signatureRsv };
+  const descriptorArr = [reader, source, subject, manifest, expiration, signatureRsv];
 
   describe("constructor", () => {
     it("throws error if reader is not a valid address", () => {
@@ -46,7 +47,7 @@ describe("ReadPermission", () => {
         expect(new ReadPermission(descriptorArr)).to.deep.equal(descriptorObj);
       });
       it("transforms rpc signatures into rsv signatures", () => {
-        expect(new ReadPermission([reader, source, subject, expiration, signatureRsv]))
+        expect(new ReadPermission([reader, source, subject, manifest, expiration, signatureRsv]))
           .to.deep.equal(descriptorObj);
       });
     });
@@ -56,7 +57,7 @@ describe("ReadPermission", () => {
     it("returns an array with the object properties", () => {
       const readPermission = new ReadPermission(descriptorObj);
       expect(readPermission.toABI()).to.deep
-        .equal([reader, source, subject, expiration, signatureRsv]);
+        .equal([reader, source, subject, manifest, expiration, signatureRsv]);
     });
   });
 });

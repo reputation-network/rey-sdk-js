@@ -9,6 +9,7 @@ describe("Factory.buildReadPermission", () => {
     reader: `0x${"a".repeat(40)}`,
     source: `0x${"b".repeat(40)}`,
     subject: `0x${"c".repeat(40)}`,
+    manifest: `0x${"d".repeat(64)}`,
     expiration: Math.floor(Date.now() / 1000),
   };
 
