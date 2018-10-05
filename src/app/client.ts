@@ -68,15 +68,14 @@ export default class AppClient {
     return res.data;
   }
 
-
   private async getManifest(manifestEntry: ManifestEntry) {
-    const res = await this.opts.http.get(manifestUrl, { responseType: "arraybuffer" });
+    const res = await this.opts.http.get(manifestEntry.url, { responseType: "arraybuffer" });
     const responseHash = sha3(res.data);
     if (responseHash !== manifestEntry.hash) {
       throw new Error(`Manifest hash check failed for ${this.address}`);
     }
     try {
-      return JSON.parse(Buffer.from(res.data));
+      return JSON.parse(Buffer.from(res.data).toString("utf8"));
     } catch (e) {
       throw new Error(`Manifest parsing failed for ${this.address}`);
     }
