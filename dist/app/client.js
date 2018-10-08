@@ -78,12 +78,13 @@ class AppClient {
     getManifest(manifestEntry) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield this.opts.http.get(manifestEntry.url, { responseType: "arraybuffer" });
-            const responseHash = web3_utils_1.sha3(res.data);
+            const dataBuffer = safe_buffer_1.Buffer.from(res.data);
+            const responseHash = web3_utils_1.sha3(dataBuffer);
             if (responseHash !== manifestEntry.hash) {
                 throw new Error(`Manifest hash check failed for ${this.address}`);
             }
             try {
-                return JSON.parse(safe_buffer_1.Buffer.from(res.data).toString("utf8"));
+                return JSON.parse(dataBuffer.toString("utf8"));
             }
             catch (e) {
                 throw new Error(`Manifest parsing failed for ${this.address}`);
