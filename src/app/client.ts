@@ -26,7 +26,7 @@ export default class AppClient {
       return entry;
     } else {
       return null;
-  }
+    }
   }
 
   public async manifest(): Promise<AppManifest|null> {
@@ -44,12 +44,18 @@ export default class AppClient {
   }
 
   public async extraReadPermissions(): Promise<PartialReadPermission[]> {
+    const manifestEntry = await this.manifestEntry();
+    if (!manifestEntry) {
+      throw new Error(`No manifest entry found for ${this.address}`);
+    }
     const manifest = await this.manifest();
     if (!manifest) {
-      throw new Error(`No manifest record found for ${this.address}`);
+      throw new Error(`Could not retrieve manifest for app ${this.address}`);
     }
-    const directDependencies = manifest.app_dependencies.map(
-      (dep) => ({ reader: manifest.address, source: dep }));
+    const directDependencies = manifest.app_dependencies.map((dep) => {
+      return { reader: manifest.address, source: dep,
+        manifest: manifestEntry.hash };
+    });
     const childDependencies = await Promise.all(
       // FIXME: There is a risk of infinite recursion error here,
       //        should we handle that scenario? how?
