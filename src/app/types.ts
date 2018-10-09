@@ -1,6 +1,6 @@
-import { Address, Signature } from "../types";
+import { Address, Hash, Signature } from "../types";
 
-export { Address, Signature };
+export { Address, Hash, Signature };
 
 export interface AppManifest {
   version: string;
@@ -17,6 +17,7 @@ export interface AppManifest {
 
 export interface PartialReadPermission {
   source: Address;
+  manifest: Hash;
   reader: Address;
 }
 
