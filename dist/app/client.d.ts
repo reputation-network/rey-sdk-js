@@ -15,6 +15,7 @@ export default class AppClient {
 export declare function buildOptions(opts: IAppClientOptions): Required<IAppClientOptions>;
 interface IAppClientOptions {
     http?: AxiosInstance;
+    manifestEntryCache?: Map<string, ManifestEntry>;
     manifestCache?: Map<string, AppManifest>;
     contract?: RegistryContract;
 }

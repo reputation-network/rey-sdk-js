@@ -23,8 +23,17 @@ class AppClient {
     }
     manifestEntry() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.opts.manifestEntryCache.has(this.address)) {
+                return this.opts.manifestEntryCache.get(this.address);
+            }
             const entry = yield this.opts.contract.getEntry(this.address);
-            return entry.url ? entry : null;
+            if (entry && entry.url) {
+                this.opts.manifestEntryCache.set(this.address, entry);
+                return entry;
+            }
+            else {
+                return null;
+            }
         });
     }
     manifest() {
@@ -44,11 +53,18 @@ class AppClient {
     }
     extraReadPermissions() {
         return __awaiter(this, void 0, void 0, function* () {
+            const manifestEntry = yield this.manifestEntry();
+            if (!manifestEntry) {
+                throw new Error(`No manifest entry found for ${this.address}`);
+            }
             const manifest = yield this.manifest();
             if (!manifest) {
-                throw new Error(`No manifest record found for ${this.address}`);
+                throw new Error(`Could not retrieve manifest for app ${this.address}`);
             }
-            const directDependencies = manifest.app_dependencies.map((dep) => ({ reader: manifest.address, source: dep }));
+            const directDependencies = manifest.app_dependencies.map((dep) => {
+                return { reader: manifest.address, source: dep,
+                    manifest: manifestEntry.hash };
+            });
             const childDependencies = yield Promise.all(
             // FIXME: There is a risk of infinite recursion error here,
             //        should we handle that scenario? how?
@@ -96,6 +112,7 @@ exports.default = AppClient;
 function buildOptions(opts) {
     return Object.assign({
         http: axios_1.default.create(),
+        manifestEntryCache: new Map(),
         manifestCache: new Map(),
         contract: contracts_1.DevelopmentContract(),
     }, opts);
