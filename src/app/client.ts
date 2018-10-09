@@ -17,8 +17,16 @@ export default class AppClient {
   }
 
   public async manifestEntry(): Promise<ManifestEntry|null> {
+    if (this.opts.manifestEntryCache.has(this.address)) {
+      return this.opts.manifestEntryCache.get(this.address)!;
+    }
     const entry = await this.opts.contract.getEntry(this.address);
-    return entry.url ? entry : null;
+    if (entry && entry.url) {
+      this.opts.manifestEntryCache.set(this.address, entry);
+      return entry;
+    } else {
+      return null;
+  }
   }
 
   public async manifest(): Promise<AppManifest|null> {
@@ -86,6 +94,7 @@ export default class AppClient {
 export function buildOptions(opts: IAppClientOptions): Required<IAppClientOptions> {
   return Object.assign({
     http: axios.create(),
+    manifestEntryCache: new Map(),
     manifestCache: new Map(),
     contract: DevelopmentContract(),
   }, opts);
@@ -93,6 +102,7 @@ export function buildOptions(opts: IAppClientOptions): Required<IAppClientOption
 
 interface IAppClientOptions {
   http?: AxiosInstance;
+  manifestEntryCache?: Map<string, ManifestEntry>;
   manifestCache?: Map<string, AppManifest>;
   contract?: RegistryContract;
 }
