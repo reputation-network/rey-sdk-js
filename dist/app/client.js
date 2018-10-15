@@ -21,42 +21,36 @@ class AppClient {
         this.address = address;
         this.opts = buildOptions(opts);
     }
-    manifestEntry() {
+    manifestEntry(address = this.address) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.opts.manifestEntryCache.has(this.address)) {
-                return this.opts.manifestEntryCache.get(this.address);
+            if (this.opts.manifestEntryCache.has(address)) {
+                return this.opts.manifestEntryCache.get(address);
             }
-            const entry = yield this.opts.contract.getEntry(this.address);
+            const entry = yield this.opts.contract.getEntry(address);
             if (entry && entry.url) {
-                this.opts.manifestEntryCache.set(this.address, entry);
+                this.opts.manifestEntryCache.set(address, entry);
                 return entry;
             }
             else {
-                return null;
+                throw new Error(`No manifest entry found for ${this.address}`);
             }
         });
     }
-    manifest() {
+    manifest(address = this.address) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.opts.manifestCache.has(this.address)) {
-                return this.opts.manifestCache.get(this.address);
+            if (this.opts.manifestCache.has(address)) {
+                return this.opts.manifestCache.get(address);
             }
-            const entry = yield this.manifestEntry();
-            if (!entry) {
-                return null;
-            }
+            const entry = yield this.manifestEntry(address);
             const manifest = yield this.getManifest(entry);
             // FIXME: Check `manifest` actually implements the AppManifest interface
-            this.opts.manifestCache.set(this.address, manifest);
+            this.opts.manifestCache.set(address, manifest);
             return manifest;
         });
     }
     extraReadPermissions() {
         return __awaiter(this, void 0, void 0, function* () {
             const manifestEntry = yield this.manifestEntry();
-            if (!manifestEntry) {
-                throw new Error(`No manifest entry found for ${this.address}`);
-            }
             const manifest = yield this.manifest();
             if (!manifest) {
                 throw new Error(`Could not retrieve manifest for app ${this.address}`);
@@ -67,7 +61,7 @@ class AppClient {
             });
             const childDependencies = yield Promise.all(
             // FIXME: There is a risk of infinite recursion error here,
-            //        should we handle that scenario? how?
+            //        handle using client cache
             manifest.app_dependencies.map((dep) => {
                 const depClient = new AppClient(dep, this.opts);
                 return depClient.extraReadPermissions();
@@ -80,12 +74,12 @@ class AppClient {
     }
     query(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const manifest = yield this.manifest();
-            if (!manifest) {
-                throw new Error(`No manifest record found for ${this.address}`);
-            }
+            const manifest = yield this.manifest(params.request.session.verifier);
             const appReadToken = utils_1.encodeUnsignedJwt(params);
-            const res = yield this.opts.http.get(manifest.app_url, {
+            if (!manifest.verifier_url) {
+                throw new Error(`Missing verifier_url for address ${manifest.address}`);
+            }
+            const res = yield this.opts.http.get(manifest.verifier_url, {
                 headers: { authorization: `bearer ${appReadToken}` },
             });
             return res.data;
