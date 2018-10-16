@@ -15,6 +15,11 @@ export default class ReyContract {
     return this.contract.methods.validateRequest(arg).call();
   }
 
+  public async getPastTransactions(subject: string): Promise<any> {
+    const events = await this.contract.getPastEvents("Cashout", {filter: {subject}})
+    return events.map((event) => event.returnValues.transaction); // TODO paginate
+  }
+
   public async cashout(...args: any[]) {
     throw new Error("This method is not yet implemented");
   }

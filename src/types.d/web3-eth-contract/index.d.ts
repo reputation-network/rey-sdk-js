@@ -11,14 +11,19 @@ declare module "web3-eth-contract" {
     estimateGas<T= any>(opts?: TransactionOptions): Promise<T>;
     encodeABI(): string;
   }
+  interface Event {
+    returnValues: any;
+  }
   class Contract {
     public static setProvider(provider: string): void;
     public methods: { [method: string]: (...args: any[]) => Transaction };
+    public getPastEvents(...args: any[]): Promise<Event[]>; // FIXME
     constructor(abi: any, address?: string, opts?: TransactionOptions);
   }
   export default Contract;
   export {
     TransactionOptions,
     Transaction,
+    Event,
   };
 }
