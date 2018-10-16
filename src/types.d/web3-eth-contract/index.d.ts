@@ -17,8 +17,8 @@ declare module "web3-eth-contract" {
   class Contract {
     public static setProvider(provider: string): void;
     public methods: { [method: string]: (...args: any[]) => Transaction };
-    public getPastEvents(...args: any[]): Promise<Event[]>; // FIXME
     constructor(abi: any, address?: string, opts?: TransactionOptions);
+    public getPastEvents(...args: any[]): Promise<Event[]>; // FIXME
   }
   export default Contract;
   export {
