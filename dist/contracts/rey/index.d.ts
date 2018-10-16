@@ -5,6 +5,7 @@ export default class ReyContract {
     private readonly ABI;
     constructor(provider: string, address: string, options?: TransactionOptions);
     validateRequest(request: Request): Promise<boolean>;
+    getPastTransactions(subject: string): Promise<any>;
     cashout(...args: any[]): Promise<void>;
     fund(...args: any[]): Promise<void>;
     release(...args: any[]): Promise<void>;

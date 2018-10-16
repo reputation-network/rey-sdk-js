@@ -33,7 +33,7 @@ exports.DevelopmentContract = DevelopmentContract;
 function TestnetContract(provider, options) {
     return SmartContract(provider, {
         registry: "0xC05f9be01592902e133F398998E783b6cbD93813",
-        rey: "0xe410f8ff9ce89b2c2bd940967cac9dade139a0c7",
+        rey: "0xF4f8787A17aBF8011Aef72dEa64bFBA1993E7F38",
     }, options);
 }
 exports.TestnetContract = TestnetContract;

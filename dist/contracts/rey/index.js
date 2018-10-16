@@ -24,6 +24,12 @@ class ReyContract {
             return this.contract.methods.validateRequest(arg).call();
         });
     }
+    getPastTransactions(subject) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const events = yield this.contract.getPastEvents("Cashout", { filter: { subject } });
+            return events.map((event) => event.returnValues.transaction); // TODO paginate
+        });
+    }
     cashout(...args) {
         return __awaiter(this, void 0, void 0, function* () {
             throw new Error("This method is not yet implemented");
