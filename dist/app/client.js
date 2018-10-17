@@ -32,7 +32,7 @@ class AppClient {
                 return entry;
             }
             else {
-                throw new Error(`No manifest entry found for ${this.address}`);
+                throw new Error(`No manifest entry found for ${address}`);
             }
         });
     }
@@ -91,13 +91,13 @@ class AppClient {
             const dataBuffer = safe_buffer_1.Buffer.from(res.data);
             const responseHash = web3_utils_1.sha3(dataBuffer);
             if (responseHash !== manifestEntry.hash) {
-                throw new Error(`Manifest hash check failed for ${this.address}`);
+                throw new Error(`Manifest hash check failed for ${manifestEntry.url}`);
             }
             try {
                 return JSON.parse(dataBuffer.toString("utf8"));
             }
             catch (e) {
-                throw new Error(`Manifest parsing failed for ${this.address}`);
+                throw new Error(`Manifest parsing failed for ${manifestEntry.url}`);
             }
         });
     }

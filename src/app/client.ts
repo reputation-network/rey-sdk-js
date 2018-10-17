@@ -26,7 +26,7 @@ export default class AppClient {
       this.opts.manifestEntryCache.set(address, entry);
       return entry;
     } else {
-      throw new Error(`No manifest entry found for ${this.address}`);
+      throw new Error(`No manifest entry found for ${address}`);
     }
   }
 
@@ -82,12 +82,12 @@ export default class AppClient {
     const dataBuffer = Buffer.from(res.data);
     const responseHash = sha3(dataBuffer as any);
     if (responseHash !== manifestEntry.hash) {
-      throw new Error(`Manifest hash check failed for ${this.address}`);
+      throw new Error(`Manifest hash check failed for ${manifestEntry.url}`);
     }
     try {
       return JSON.parse(dataBuffer.toString("utf8"));
     } catch (e) {
-      throw new Error(`Manifest parsing failed for ${this.address}`);
+      throw new Error(`Manifest parsing failed for ${manifestEntry.url}`);
     }
   }
 }
