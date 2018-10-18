@@ -4,9 +4,9 @@ import { sha3 } from "web3-utils";
 import { DevelopmentContract } from "../contracts";
 import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
-import { encodeUnsignedJwt } from "../utils";
-import { AppManifest, Address, PartialReadPermission } from "./types";
 import { SignStrategy } from "../types";
+import { encodeUnsignedJwt } from "../utils";
+import { Address, AppManifest, PartialReadPermission } from "./types";
 
 export default class AppClient {
   public readonly address: string;
