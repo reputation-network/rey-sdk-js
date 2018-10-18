@@ -8,7 +8,12 @@ export default function MetamaskPersonalSignStrategy() {
       throw new Error("No default account selected for metamask");
     }
     const msg = reyHash(data);
-    return personalSign(web3CurrentProvider, msg, account);
+    const signature = await personalSign(web3CurrentProvider, msg, account);
+    if (typeof signature === "undefined") {
+      throw new Error("User denied message signature.");
+    } else {
+      return signature;
+    }
   };
 }
 
