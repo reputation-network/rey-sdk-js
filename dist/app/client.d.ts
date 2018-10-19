@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
-import { AppManifest, Address, PartialReadPermission } from "./types";
+import { Address, AppManifest, PartialReadPermission } from "./types";
 export default class AppClient {
     readonly address: string;
     private readonly opts;
