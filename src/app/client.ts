@@ -4,8 +4,9 @@ import { sha3 } from "web3-utils";
 import { DevelopmentContract } from "../contracts";
 import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
+import { SignStrategy } from "../types";
 import { encodeUnsignedJwt } from "../utils";
-import { AppManifest, PartialReadPermission } from "./types";
+import { Address, AppManifest, PartialReadPermission } from "./types";
 
 export default class AppClient {
   public readonly address: string;
@@ -16,38 +17,32 @@ export default class AppClient {
     this.opts = buildOptions(opts);
   }
 
-  public async manifestEntry(): Promise<ManifestEntry|null> {
-    if (this.opts.manifestEntryCache.has(this.address)) {
-      return this.opts.manifestEntryCache.get(this.address)!;
+  public async manifestEntry(address: Address = this.address): Promise<ManifestEntry> {
+    if (this.opts.manifestEntryCache.has(address)) {
+      return this.opts.manifestEntryCache.get(address)!;
     }
-    const entry = await this.opts.contract.getEntry(this.address);
+    const entry = await this.opts.contract.getEntry(address);
     if (entry && entry.url) {
-      this.opts.manifestEntryCache.set(this.address, entry);
+      this.opts.manifestEntryCache.set(address, entry);
       return entry;
     } else {
-      return null;
+      throw new Error(`No manifest entry found for ${address}`);
     }
   }
 
-  public async manifest(): Promise<AppManifest|null> {
-    if (this.opts.manifestCache.has(this.address)) {
-      return this.opts.manifestCache.get(this.address)!;
+  public async manifest(address: Address = this.address): Promise<AppManifest> {
+    if (this.opts.manifestCache.has(address)) {
+      return this.opts.manifestCache.get(address)!;
     }
-    const entry = await this.manifestEntry();
-    if (!entry) {
-      return null;
-    }
+    const entry = await this.manifestEntry(address);
     const manifest = await this.getManifest(entry);
     // FIXME: Check `manifest` actually implements the AppManifest interface
-    this.opts.manifestCache.set(this.address, manifest);
+    this.opts.manifestCache.set(address, manifest);
     return manifest;
   }
 
   public async extraReadPermissions(): Promise<PartialReadPermission[]> {
     const manifestEntry = await this.manifestEntry();
-    if (!manifestEntry) {
-      throw new Error(`No manifest entry found for ${this.address}`);
-    }
     const manifest = await this.manifest();
     if (!manifest) {
       throw new Error(`Could not retrieve manifest for app ${this.address}`);
@@ -58,7 +53,7 @@ export default class AppClient {
     });
     const childDependencies = await Promise.all(
       // FIXME: There is a risk of infinite recursion error here,
-      //        should we handle that scenario? how?
+      //        handle using client cache
       manifest.app_dependencies.map((dep: string) => {
         const depClient = new AppClient(dep, this.opts);
         return depClient.extraReadPermissions();
@@ -71,12 +66,12 @@ export default class AppClient {
   }
 
   public async query(params: AppParams) {
-    const manifest = await this.manifest();
-    if (!manifest) {
-      throw new Error(`No manifest record found for ${this.address}`);
-    }
+    const manifest = await this.manifest(params.request.session.verifier);
     const appReadToken = encodeUnsignedJwt(params);
-    const res = await this.opts.http.get(manifest.app_url, {
+    if (!manifest.verifier_url) {
+      throw new Error(`Missing verifier_url for address ${manifest.address}`);
+    }
+    const res = await this.opts.http.get(manifest.verifier_url, {
       headers: { authorization: `bearer ${appReadToken}` },
     });
     return res.data;
@@ -87,12 +82,12 @@ export default class AppClient {
     const dataBuffer = Buffer.from(res.data);
     const responseHash = sha3(dataBuffer as any);
     if (responseHash !== manifestEntry.hash) {
-      throw new Error(`Manifest hash check failed for ${this.address}`);
+      throw new Error(`Manifest hash check failed for ${manifestEntry.url}`);
     }
     try {
       return JSON.parse(dataBuffer.toString("utf8"));
     } catch (e) {
-      throw new Error(`Manifest parsing failed for ${this.address}`);
+      throw new Error(`Manifest parsing failed for ${manifestEntry.url}`);
     }
   }
 }
@@ -108,7 +103,7 @@ export function buildOptions(opts: IAppClientOptions): Required<IAppClientOption
 
 interface IAppClientOptions {
   http?: AxiosInstance;
-  manifestEntryCache?: Map<string, ManifestEntry>;
-  manifestCache?: Map<string, AppManifest>;
+  manifestEntryCache?: Map<Address, ManifestEntry>;
+  manifestCache?: Map<Address, AppManifest>;
   contract?: RegistryContract;
 }

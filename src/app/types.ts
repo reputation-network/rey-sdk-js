@@ -6,6 +6,7 @@ export interface AppManifest {
   version: string;
   name: string;
   description: string;
+  picture_url: string;
   address: Address;
   verifier_url: string;
   verifier_fee: number;
