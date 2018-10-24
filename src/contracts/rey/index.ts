@@ -16,7 +16,8 @@ export default class ReyContract {
   }
 
   public async getPastTransactions(subject: string): Promise<any> {
-    const events = await this.contract.getPastEvents("Cashout", {filter: {subject}});
+    // FIXME fromBlock should be rey creation
+    const events = await this.contract.getPastEvents("Cashout", {fromBlock: 0, filter: {subject}});
     return events.map((event) => event.returnValues.transaction); // TODO paginate
   }
 
