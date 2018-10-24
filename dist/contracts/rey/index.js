@@ -26,7 +26,8 @@ class ReyContract {
     }
     getPastTransactions(subject) {
         return __awaiter(this, void 0, void 0, function* () {
-            const events = yield this.contract.getPastEvents("Cashout", { filter: { subject } });
+            // FIXME fromBlock should be rey creation
+            const events = yield this.contract.getPastEvents("Cashout", { fromBlock: 0, filter: { subject } });
             return events.map((event) => event.returnValues.transaction); // TODO paginate
         });
     }
