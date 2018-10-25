@@ -7,7 +7,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const RequestEncryption = __importStar(require("./request-encryption"));
+exports.RequestEncryption = RequestEncryption;
 /**
  * Determines whether the provided value is strictly a number or a
  * string representing a number (radix 10)
@@ -112,6 +121,9 @@ function toRpcSignature(signature) {
     }
     else if (isRsvSignature(signature)) {
         return `0x${signature.map((p) => p.replace(/^0x/, "")).join("")}`;
+    }
+    else if (typeof signature.toRPC === "function") {
+        return signature.toRPC();
     }
     else {
         throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);

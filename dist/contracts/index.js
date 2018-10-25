@@ -26,7 +26,7 @@ exports.default = SmartContract;
 function DevelopmentContract(options) {
     return SmartContract("http://localhost:8545", {
         registry: "0x556ED3bEaF6b3dDCb1562d3F30f79bF86fFC05B9",
-        rey: "0xb30353004dE3d546a4555aD9fE1C76A832b184f4",
+        rey: "0x76C19376b275A5d77858c6F6d5322311eEb92cf5",
     }, options);
 }
 exports.DevelopmentContract = DevelopmentContract;

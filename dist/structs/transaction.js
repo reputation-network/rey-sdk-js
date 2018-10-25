@@ -14,7 +14,7 @@ class Transaction {
         this.request = new request_1.default(request);
         const proof = utils_1.extractIndexOrProperty("transaction", tx, idx++, "proof");
         this.proof = new proof_1.default(proof);
-        const signature = utils_1.extractIndexOrProperty("transaction", tx, idx++, "signature", isSignature);
+        const signature = utils_1.extractIndexOrProperty("transaction", tx, idx++, "signature");
         this.signature = new signature_1.default(signature);
         Object.freeze(this);
     }
@@ -27,3 +27,4 @@ class Transaction {
     }
 }
 exports.default = Transaction;
+//# sourceMappingURL=transaction.js.map

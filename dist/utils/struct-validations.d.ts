@@ -1,5 +1,5 @@
 import { ReadPermission, Request, Session } from "../structs";
-import { Address, HexString, RsvSignature } from "../types";
+import { Address, HexString, Signature } from "../types";
 /**
  * Validates that the given signature has been produced by signer
  * signing the provided data.
@@ -9,7 +9,7 @@ import { Address, HexString, RsvSignature } from "../types";
  * @throws {Error} if cant recover a signer from the given signature/data
  * @throws {Error} if recovered signer and provided signer don't match
  */
-export declare function validateSignature(data: HexString<any>, signature: RsvSignature, signer: Address): void;
+export declare function validateSignature(data: HexString<any>, signature: Signature, signer: Address): void;
 /**
  * Validates the provided read permission
  * @throws {Error} expiration value is a past timestamp

@@ -1,5 +1,4 @@
-import SignatureV2 from "./signature";
-
+import SignatureV2 from "./structs/signature";
 export declare type HexString<L extends number> = string;
 export declare type Hash = HexString<32>;
 export declare type Address = HexString<40>;

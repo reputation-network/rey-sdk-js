@@ -1,10 +1,10 @@
 import Proof from "./proof";
 import Request from "./request";
-import Signature from "./signature";
+import SignatureV2 from "./signature";
 export default class Transaction {
     readonly request: Request;
     readonly proof: Proof;
-    readonly signature: Signature;
+    readonly signature: SignatureV2;
     constructor(tx: any);
-    toABI(): any[][];
+    toABI(): (string | (string | string[])[])[][];
 }

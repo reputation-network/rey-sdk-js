@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
+const signature_1 = __importDefault(require("./signature"));
 class ReadPermission {
     constructor(rp) {
         let idx = 0;
@@ -9,8 +13,8 @@ class ReadPermission {
         this.subject = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "subject", utils_1.isAddress);
         this.manifest = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "manifest", utils_1.isHash);
         this.expiration = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "expiration", utils_1.isNumeric);
-        const signature = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "signature", utils_1.isSignature);
-        this.signature = utils_1.normalizeSignature(signature);
+        const signature = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "signature");
+        this.signature = new signature_1.default(signature);
         Object.freeze(this);
     }
     toABI() {
@@ -20,7 +24,7 @@ class ReadPermission {
             this.subject,
             this.manifest,
             this.expiration,
-            this.signature,
+            this.signature.toABI(),
         ];
     }
 }

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const session_1 = __importDefault(require("./session"));
+const signature_1 = __importDefault(require("./signature"));
 const write_permission_1 = __importDefault(require("./write-permission"));
 class Proof {
     constructor(proof) {
@@ -13,15 +14,15 @@ class Proof {
         this.writePermission = new write_permission_1.default(writePermission);
         const session = utils_1.extractIndexOrProperty("proof", proof, idx++, "session");
         this.session = new session_1.default(session);
-        const signature = utils_1.extractIndexOrProperty("proof", proof, idx++, "signature", utils_1.isSignature);
-        this.signature = utils_1.normalizeSignature(signature);
+        const signature = utils_1.extractIndexOrProperty("proof", proof, idx++, "signature");
+        this.signature = new signature_1.default(signature);
         Object.freeze(this);
     }
     toABI() {
         return [
             this.writePermission.toABI(),
             this.session.toABI(),
-            this.signature,
+            this.signature.toABI(),
         ];
     }
 }
