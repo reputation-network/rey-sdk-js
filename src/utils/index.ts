@@ -1,5 +1,8 @@
 import { Address, Hash, HexString, RpcSignature, RsvSignature, Signature, SignedEntity, SignStrategy } from "../types";
 
+import * as RequestEncryption from "./request-encryption";
+export { RequestEncryption };
+
 /**
  * Determines whether the provided value is strictly a number or a
  * string representing a number (radix 10)

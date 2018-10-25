@@ -10,7 +10,7 @@ export interface AppManifest {
     verifier_fee: number;
     app_url: string;
     app_reward: number;
-    app_schema: string;
+    app_schema: any;
     app_dependencies: Address[];
 }
 export interface PartialReadPermission {
