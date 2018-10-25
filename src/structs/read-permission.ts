@@ -1,5 +1,6 @@
-import { Address, Hash, RsvSignature } from "../types";
-import { extractIndexOrProperty, isAddress, isHash, isNumeric, isSignature, normalizeSignature } from "../utils";
+import { Address, Hash } from "../types";
+import { extractIndexOrProperty, isAddress, isHash, isNumeric } from "../utils";
+import SignatureV2 from "./signature";
 
 export default class ReadPermission {
   public readonly reader: Address;
@@ -7,7 +8,7 @@ export default class ReadPermission {
   public readonly subject: Address;
   public readonly manifest: Hash;
   public readonly expiration: string;
-  public readonly signature: RsvSignature;
+  public readonly signature: SignatureV2;
 
   constructor(rp: any) {
     let idx = 0;
@@ -16,8 +17,8 @@ export default class ReadPermission {
     this.subject = extractIndexOrProperty("readPermission", rp, idx++, "subject", isAddress);
     this.manifest = extractIndexOrProperty("readPermission", rp, idx++, "manifest", isHash);
     this.expiration = extractIndexOrProperty("readPermission", rp, idx++, "expiration", isNumeric);
-    const signature = extractIndexOrProperty("readPermission", rp, idx++, "signature", isSignature);
-    this.signature = normalizeSignature(signature);
+    const signature = extractIndexOrProperty("readPermission", rp, idx++, "signature");
+    this.signature = new SignatureV2(signature);
     Object.freeze(this);
   }
 
@@ -28,7 +29,7 @@ export default class ReadPermission {
       this.subject,
       this.manifest,
       this.expiration,
-      this.signature,
+      this.signature.toABI(),
     ];
   }
 }

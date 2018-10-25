@@ -106,6 +106,8 @@ export function toRpcSignature(signature: any): RpcSignature {
     return signature;
   } else if (isRsvSignature(signature)) {
     return `0x${signature.map((p) => p.replace(/^0x/, "")).join("")}`;
+  } else if (typeof signature.toRPC === "function") {
+    return signature.toRPC();
   } else {
     throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);
   }

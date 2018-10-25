@@ -1,12 +1,12 @@
-import { RsvSignature } from "../types";
-import { extractIndexOrProperty, isSignature, normalizeSignature } from "../utils";
+import { extractIndexOrProperty } from "../utils";
 import Session from "./session";
+import SignatureV2 from "./signature";
 import WritePermission from "./write-permission";
 
 export default class Proof {
   public readonly writePermission: WritePermission;
   public readonly session: Session;
-  public readonly signature: RsvSignature;
+  public readonly signature: SignatureV2;
 
   constructor(proof: any) {
     let idx = 0;
@@ -14,8 +14,8 @@ export default class Proof {
     this.writePermission = new WritePermission(writePermission);
     const session = extractIndexOrProperty("proof", proof, idx++, "session");
     this.session = new Session(session);
-    const signature = extractIndexOrProperty("proof", proof, idx++, "signature", isSignature);
-    this.signature = normalizeSignature(signature);
+    const signature = extractIndexOrProperty("proof", proof, idx++, "signature");
+    this.signature = new SignatureV2(signature);
     Object.freeze(this);
   }
 
@@ -23,7 +23,7 @@ export default class Proof {
     return [
       this.writePermission.toABI(),
       this.session.toABI(),
-      this.signature,
+      this.signature.toABI(),
     ];
   }
 }
