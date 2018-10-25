@@ -97,10 +97,10 @@ describe("Utils", () => {
       const body: any = [{ some: "value", another: "value", aNumber: 33 }, "something else"];
       const encryptedBody = re.encryptBody(importedKey, body);
 
-      expect(encryptedBody[0]["some"]).to.not.eql(body[0]["some"]);
-      expect(encryptedBody[0]["another"]).to.not.eql(body[0]["another"]);
-      expect(encryptedBody[0]["aNumber"]).to.not.eql(body[0]["aNumber"]);
-      expect(typeof(encryptedBody[0]["aNumber"])).to.equal("string");
+      expect(encryptedBody[0].some).to.not.eql(body[0].some);
+      expect(encryptedBody[0].another).to.not.eql(body[0].another);
+      expect(encryptedBody[0].aNumber).to.not.eql(body[0].aNumber);
+      expect(typeof(encryptedBody[0].aNumber)).to.equal("string");
       expect(encryptedBody[1]).to.not.eql(body[1]);
 
       const decryptedBody = re.decryptBody(key, encryptedBody);

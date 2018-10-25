@@ -5,7 +5,7 @@ import NodeRSA from "node-rsa";
  */
 export function createKey() {
   return new NodeRSA({ b: 512 });
-};
+}
 
 /**
  * Exports an RSA encryption key to share it with a third party. Only the public key is exported.
@@ -13,8 +13,7 @@ export function createKey() {
  */
 export function exportKey(key: NodeRSA): string {
   return key.exportKey("pkcs8-public");
-};
-
+}
 
 /**
  * Imports an RSA encryption key, received from with a third party. Only the public key is imported.
@@ -24,7 +23,7 @@ export function importKey(serializedKey: string): NodeRSA {
   const key = new NodeRSA();
   key.importKey(serializedKey, "pkcs8-public");
   return key;
-};
+}
 
 /**
  * Encrypts a body using the given RSA key.
@@ -34,9 +33,13 @@ export function importKey(serializedKey: string): NodeRSA {
 export function encryptBody(key: NodeRSA, body: any): any {
   if (Array.isArray(body)) {
     return body.map((i) => encryptBody(key, i));
-  } else if (typeof(body) == 'object') {
+  } else if (typeof body === "object") {
     const obj: any = {};
-    for (let k in body) obj[k] = encryptBody(key, body[k]);
+    for (const k in body) {
+      if (body.hasOwnProperty(k)) {
+        obj[k] = encryptBody(key, body[k]);
+      }
+    }
     return obj;
   }
   return key.encrypt(JSON.stringify(body), "base64");
@@ -50,9 +53,13 @@ export function encryptBody(key: NodeRSA, body: any): any {
 export function decryptBody(key: NodeRSA, body: any): any {
   if (Array.isArray(body)) {
     return body.map((i) => decryptBody(key, i));
-  } else if (typeof(body) == 'object') {
+  } else if (typeof body === "object") {
     const obj: any = {};
-    for (let k in body) obj[k] = decryptBody(key, body[k]);
+    for (const k in body) {
+      if (body.hasOwnProperty(k)) {
+        obj[k] = decryptBody(key, body[k]);
+      }
+    }
     return obj;
   }
   return JSON.parse(key.decrypt(body, "utf8"));
