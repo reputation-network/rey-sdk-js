@@ -85,13 +85,13 @@ describe("Utils", () => {
   });
   describe("requestEncryption", () => {
     const re = utils.RequestEncryption;
-    it("creates a key that is exported and imported", () => {
-      const key = re.createKey();
+    it("creates a key that is exported and imported", async () => {
+      const key = await re.createKey();
       const serialization = re.exportKey(key);
       expect(re.exportKey(re.importKey(serialization))).to.equal(serialization);
     });
-    it("encrypts a body's values with an imported key and decrypts them", () => {
-      const key = re.createKey();
+    it("encrypts a body's values with an imported key and decrypts them", async () => {
+      const key = await re.createKey();
       const importedKey = re.importKey(re.exportKey(key));
 
       const body: any = [{ some: "value", another: "value", aNumber: 33 }, "something else"];

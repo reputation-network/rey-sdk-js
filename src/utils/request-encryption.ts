@@ -1,36 +1,42 @@
-import NodeRSA from "node-rsa";
+import crypto, { Key } from "crypto";
 
 /**
- * Creates an RSA encryption key to encrypt a request's body
+ * Creates an encryption key to encrypt a request's body
  */
-export function createKey() {
-  return new NodeRSA({ b: 512 });
+export async function createKey(): Promise<Key> {
+  return new Promise<Key>((resolve, reject) => {
+    crypto.generateKeyPair("rsa", { modulusLength: 512,
+                                    publicKeyEncoding: { type: "pkcs1", format: "pem" },
+                                    privateKeyEncoding: {type: "pkcs1", format: "pem" } },
+                            (err: Error, publicKey: string, privateKey: string) => {
+                              if (err) return reject(err);
+                              return resolve({ publicKey, privateKey });
+                            });
+  })
 }
 
 /**
- * Exports an RSA encryption key to share it with a third party. Only the public key is exported.
+ * Exports an encryption key to share it with a third party. Only the public key is exported.
  * @param key The key, generated using createKey
  */
-export function exportKey(key: NodeRSA): string {
-  return key.exportKey("pkcs8-public");
+export function exportKey(key: Key): string {
+  return key.publicKey;
 }
 
 /**
- * Imports an RSA encryption key, received from with a third party. Only the public key is imported.
- * @param serializedKey The key in pkcs8 format
+ * Imports an encryption key, received from with a third party. Only the public key is imported.
+ * @param publicKey The key in pkcs8 format
  */
-export function importKey(serializedKey: string): NodeRSA {
-  const key = new NodeRSA();
-  key.importKey(serializedKey, "pkcs8-public");
-  return key;
+export function importKey(publicKey: string): Key {
+  return { publicKey: publicKey };
 }
 
 /**
- * Encrypts a body using the given RSA key.
- * @param key The RSA key of the recipient that will decrypt the message
+ * Encrypts a body using the given key.
+ * @param key The key of the recipient that will decrypt the message
  * @param body The body to encrypt (either an array or an object, with any arrays or objects as its values)
  */
-export function encryptBody(key: NodeRSA, body: any): any {
+export function encryptBody(key: Key, body: any): any {
   if (Array.isArray(body)) {
     return body.map((i) => encryptBody(key, i));
   } else if (typeof body === "object") {
@@ -42,15 +48,16 @@ export function encryptBody(key: NodeRSA, body: any): any {
     }
     return obj;
   }
-  return key.encrypt(JSON.stringify(body), "base64");
+  return crypto.publicEncrypt(key.publicKey, Buffer.from(JSON.stringify(body))).toString("base64");
 }
 
 /**
- * Decrypts a body using the given RSA key.
- * @param key The RSA key to decrypt the message
+ * Decrypts a body using the given key.
+ * @param key The key to decrypt the message
  * @param body The body to decrypt (either an array or an object, with any arrays or objects as its values)
  */
-export function decryptBody(key: NodeRSA, body: any): any {
+export function decryptBody(key: Key, body: any): any {
+  if (!key.privateKey) throw new Error("Private key required to decrypt");
   if (Array.isArray(body)) {
     return body.map((i) => decryptBody(key, i));
   } else if (typeof body === "object") {
@@ -62,5 +69,5 @@ export function decryptBody(key: NodeRSA, body: any): any {
     }
     return obj;
   }
-  return JSON.parse(key.decrypt(body, "utf8"));
+  return JSON.parse(crypto.privateDecrypt(key.privateKey, Buffer.from(body, "base64")).toString());
 }
