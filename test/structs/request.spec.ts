@@ -14,14 +14,17 @@ describe("Request", () => {
   const nonce = Date.now();
   const value = 100;
   const counter = Date.now();
-  const signatureRsv = [`0x${"3".repeat(64)}`, `0x${"4".repeat(64)}`, `0x${"2".repeat(2)}`];
-  const signatureHex = `0x${"3".repeat(64)}${"4".repeat(64)}${"2".repeat(2)}`;
-  const readPermission = { reader, source, subject, manifest, expiration, signature: signatureRsv };
-  const readPermissionArr = [reader, source, subject, manifest, expiration, signatureRsv];
-  const session = { subject, verifier, fee, nonce, signature: signatureRsv };
-  const sessionArr = [subject, verifier, fee, nonce, signatureRsv];
-  const descriptorObj = { readPermission, session, counter, value, signature: signatureRsv };
-  const descriptorArr = [readPermissionArr, sessionArr, counter, value, signatureRsv];
+  const r = `0x${"3".repeat(64)}`;
+  const s = `0x${"4".repeat(64)}`;
+  const v = `0x${"2".repeat(2)}`;
+  const signature = { r, s, v };
+  const signatureArr = [r, s, v];
+  const readPermission = { reader, source, subject, manifest, expiration, signature };
+  const readPermissionArr = [reader, source, subject, manifest, expiration, signatureArr];
+  const session = { subject, verifier, fee, nonce, signature};
+  const sessionArr = [subject, verifier, fee, nonce, signatureArr];
+  const descriptorObj = { readPermission, session, counter, value, signature };
+  const descriptorArr = [readPermissionArr, sessionArr, counter, value, signatureArr];
 
   describe("constructor", () => {
     it("throws error if counter is not numeric", () => {
@@ -40,29 +43,19 @@ describe("Request", () => {
       const createRp = () => new Request({ ...descriptorObj, session: {} });
       expect(createRp).to.throw(TypeError, /session/);
     });
-    it("throws error if signature is not a valid signature strcutre", () => {
-      const createRequest1 = () => new Request({ ...descriptorObj, signature: `0x${"a".repeat(64)}` });
-      expect(createRequest1).to.throw(TypeError, /request.+signature/);
-      const createRequest2 = () => new Request({ ...descriptorObj, signature: descriptorArr.concat(["0xad"]) });
-      expect(createRequest2).to.throw(TypeError, /request.+signature/);
+    it("throws error if signature is not valid", () => {
+      const createRp = () => new Request({ ...descriptorObj, signature: {} });
+      expect(createRp).to.throw(TypeError, /signature/);
     });
     it("creates a frozen instance", () => expect(new Request(descriptorObj)).to.be.frozen);
     context("with an object descriptor", () => {
       it("stores its values", () => {
         expect(new Request(descriptorObj)).to.deep.equal(descriptorObj);
       });
-      it("transforms rpc signatures into rsv signatures", () => {
-        expect(new Request({ ...descriptorObj, signature: signatureHex }))
-          .to.deep.equal(descriptorObj);
-      });
     });
     context("with an array descriptor", () => {
       it("stores its values and allows access by property name", () => {
         expect(new Request(descriptorArr)).to.deep.equal(descriptorObj);
-      });
-      it("transforms rpc signatures into rsv signatures", () => {
-        expect(new Request([readPermissionArr, sessionArr, counter, value, signatureHex]))
-          .to.deep.equal(descriptorObj);
       });
     });
   });
@@ -85,7 +78,7 @@ describe("Request", () => {
     it("returns an array with the object properties", () => {
       const request = new Request(descriptorObj);
       expect(request.toABI()).to.deep
-        .equal([readPermissionArr, sessionArr, counter, value, signatureRsv]);
+        .equal([readPermissionArr, sessionArr, counter, value, signatureArr]);
     });
   });
 });

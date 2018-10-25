@@ -6,10 +6,13 @@ describe("Session", () => {
   const verifier = `0x${"b".repeat(40)}`;
   const fee = 100;
   const nonce = Date.now();
-  const signatureRsv = [`0x${"3".repeat(64)}`, `0x${"4".repeat(64)}`, `0x${"2".repeat(2)}`];
-  const signatureHex = `0x${"3".repeat(64)}${"4".repeat(64)}${"2".repeat(2)}`;
-  const descriptorObj = { subject, verifier, fee, nonce, signature: signatureRsv };
-  const descriptorArr = [subject, verifier, fee, nonce, signatureRsv];
+  const r = `0x${"3".repeat(64)}`;
+  const s = `0x${"4".repeat(64)}`;
+  const v = `0x${"2".repeat(2)}`;
+  const signature = { r, s, v };
+  const signatureArr = [r, s, v];
+  const descriptorObj = { subject, verifier, fee, nonce, signature };
+  const descriptorArr = [subject, verifier, fee, nonce, signatureArr];
 
   describe("constructor", () => {
     it("throws error if subject is not a valid address", () => {
@@ -28,30 +31,20 @@ describe("Session", () => {
       const createSession = () => new Session({ ...descriptorObj, nonce: "asdf" });
       expect(createSession).to.throw(TypeError, /session.+nonce/);
     });
-    it("throws error if signature is not a valid signature strcutre", () => {
-      const createSession1 = () => new Session({ ...descriptorObj, signature: `0x${"a".repeat(64)}` });
-      expect(createSession1).to.throw(TypeError, /session.+signature/);
-      const createSession2 = () => new Session({ ...descriptorObj, signature: descriptorArr.concat(["0xad"]) });
-      expect(createSession2).to.throw(TypeError, /session.+signature/);
+    it("throws error if signature is not valid", () => {
+      const createSession = () => new Session({ ...descriptorObj, signature: {} });
+      expect(createSession).to.throw(TypeError, /signature/);
     });
     it("creates a frozen instance", () => expect(new Session(descriptorObj)).to.be.frozen);
     context("with an object descriptor", () => {
       it("stores its values", () => {
         expect(new Session(descriptorObj)).to.deep.equal(descriptorObj);
       });
-      it("transforms rpc signatures into rsv signatures", () => {
-        expect(new Session({ ...descriptorObj, signature: signatureHex }))
-          .to.deep.equal(descriptorObj);
-      });
     });
 
     context("with an array descriptor", () => {
       it("stores its values and allows access by property name", () => {
         expect(new Session(descriptorArr)).to.deep.equal(descriptorObj);
-      });
-      it("transforms rpc signatures into rsv signatures", () => {
-        expect(new Session([subject, verifier, fee, nonce, signatureHex]))
-          .to.deep.equal(descriptorObj);
       });
     });
   });
@@ -60,7 +53,7 @@ describe("Session", () => {
     it("returns an array with the object properties", () => {
       const session = new Session(descriptorObj);
       expect(session.toABI()).to.deep
-        .equal([subject, verifier, fee, nonce, signatureRsv]);
+        .equal([subject, verifier, fee, nonce, signatureArr]);
     });
   });
 });

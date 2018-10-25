@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const read_permission_1 = __importDefault(require("./read-permission"));
 const session_1 = __importDefault(require("./session"));
+const signature_1 = __importDefault(require("./signature"));
 class Request {
     constructor(req) {
         let idx = 0;
@@ -15,8 +16,8 @@ class Request {
         this.session = new session_1.default(session);
         this.counter = utils_1.extractIndexOrProperty("request", req, idx++, "counter", utils_1.isNumeric);
         this.value = utils_1.extractIndexOrProperty("request", req, idx++, "value", utils_1.isNumeric);
-        const signature = utils_1.extractIndexOrProperty("request", req, idx++, "signature", utils_1.isSignature);
-        this.signature = utils_1.normalizeSignature(signature);
+        const signature = utils_1.extractIndexOrProperty("request", req, idx++, "signature");
+        this.signature = new signature_1.default(signature);
         Object.freeze(this);
     }
     toABI() {
@@ -25,7 +26,7 @@ class Request {
             this.session.toABI(),
             this.counter,
             this.value,
-            this.signature,
+            this.signature.toABI(),
         ];
     }
 }

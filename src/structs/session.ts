@@ -1,12 +1,13 @@
-import { Address, RsvSignature } from "../types";
-import { extractIndexOrProperty, isAddress, isNumeric, isSignature, normalizeSignature } from "../utils";
+import { Address } from "../types";
+import { extractIndexOrProperty, isAddress, isNumeric } from "../utils";
+import SignatureV2 from "./signature";
 
 export default class Session {
   public readonly subject: Address;
   public readonly verifier: Address;
   public readonly fee: string;
   public readonly nonce: string;
-  public readonly signature: RsvSignature;
+  public readonly signature: SignatureV2;
 
   constructor(sess: any) {
     let idx = 0;
@@ -14,8 +15,8 @@ export default class Session {
     this.verifier = extractIndexOrProperty("session", sess, idx++, "verifier", isAddress);
     this.fee = extractIndexOrProperty("session", sess, idx++, "fee", isNumeric);
     this.nonce = extractIndexOrProperty("session", sess, idx++, "nonce", isNumeric);
-    const signature = extractIndexOrProperty("session", sess, idx++, "signature", isSignature);
-    this.signature = normalizeSignature(signature);
+    const signature = extractIndexOrProperty("session", sess, idx++, "signature");
+    this.signature = new SignatureV2(signature);
     Object.freeze(this);
   }
 
@@ -25,7 +26,7 @@ export default class Session {
       this.verifier,
       this.fee,
       this.nonce,
-      this.signature,
+      this.signature.toABI(),
     ];
   }
 }

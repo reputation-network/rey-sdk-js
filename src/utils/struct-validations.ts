@@ -2,7 +2,7 @@ import assert from "assert";
 import Accounts from "web3-eth-accounts";
 import { toChecksumAddress } from "web3-utils";
 import { ReadPermission, Request, Session } from "../structs";
-import { Address, HexString, RsvSignature } from "../types";
+import { Address, HexString, Signature } from "../types";
 import { recoverSignatureSeed, reyHash, toRpcSignature } from "./index";
 
 /**
@@ -14,7 +14,7 @@ import { recoverSignatureSeed, reyHash, toRpcSignature } from "./index";
  * @throws {Error} if cant recover a signer from the given signature/data
  * @throws {Error} if recovered signer and provided signer don't match
  */
-export function validateSignature(data: HexString<any>, signature: RsvSignature, signer: Address) {
+export function validateSignature(data: HexString<any>, signature: Signature, signer: Address) {
   const accounts = new Accounts();
   const rpcSignature = toRpcSignature(signature);
   const recoveredSigner = accounts.recover(data, rpcSignature);

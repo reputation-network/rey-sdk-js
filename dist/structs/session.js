@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
+const signature_1 = __importDefault(require("./signature"));
 class Session {
     constructor(sess) {
         let idx = 0;
@@ -8,8 +12,8 @@ class Session {
         this.verifier = utils_1.extractIndexOrProperty("session", sess, idx++, "verifier", utils_1.isAddress);
         this.fee = utils_1.extractIndexOrProperty("session", sess, idx++, "fee", utils_1.isNumeric);
         this.nonce = utils_1.extractIndexOrProperty("session", sess, idx++, "nonce", utils_1.isNumeric);
-        const signature = utils_1.extractIndexOrProperty("session", sess, idx++, "signature", utils_1.isSignature);
-        this.signature = utils_1.normalizeSignature(signature);
+        const signature = utils_1.extractIndexOrProperty("session", sess, idx++, "signature");
+        this.signature = new signature_1.default(signature);
         Object.freeze(this);
     }
     toABI() {
@@ -18,7 +22,7 @@ class Session {
             this.verifier,
             this.fee,
             this.nonce,
-            this.signature,
+            this.signature.toABI(),
         ];
     }
 }

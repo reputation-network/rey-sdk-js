@@ -9,14 +9,18 @@ describe("Proof", () => {
   const verifier = `0x${"d".repeat(40)}`;
   const fee = 100;
   const nonce = Date.now();
-  const signatureRsv = [`0x${"3".repeat(64)}`, `0x${"4".repeat(64)}`, `0x${"2".repeat(2)}`];
+  const r = `0x${"3".repeat(64)}`;
+  const s = `0x${"4".repeat(64)}`;
+  const v = `0x${"2".repeat(2)}`;
+  const signature = { r, s, v };
+  const signatureArr = [r, s, v];
   const signatureHex = `0x${"3".repeat(64)}${"4".repeat(64)}${"2".repeat(2)}`;
-  const writePermission = { writer, subject, signature: signatureRsv };
-  const writePermissionArr = [writer, subject, signatureRsv];
-  const session = { subject, verifier, fee, nonce, signature: signatureRsv };
-  const sessionArr = [subject, verifier, fee, nonce, signatureRsv];
-  const descriptorObj = { writePermission, session, signature: signatureRsv };
-  const descriptorArr = [writePermissionArr, sessionArr, signatureRsv];
+  const writePermission = { writer, subject, signature };
+  const writePermissionArr = [writer, subject, signatureArr];
+  const session = { subject, verifier, fee, nonce, signature };
+  const sessionArr = [subject, verifier, fee, nonce, signatureArr];
+  const descriptorObj = { writePermission, session, signature };
+  const descriptorArr = [writePermissionArr, sessionArr, signatureArr];
 
   describe("constructor", () => {
     it("throws error if write permission is not valid", () => {
@@ -29,9 +33,9 @@ describe("Proof", () => {
     });
     it("throws error if signature is not a valid signature strcutre", () => {
       const createProof1 = () => new Proof({ ...descriptorObj, signature: `0x${"a".repeat(64)}` });
-      expect(createProof1).to.throw(TypeError, /proof.+signature/);
+      expect(createProof1).to.throw(TypeError, /signature/);
       const createProof2 = () => new Proof({ ...descriptorObj, signature: descriptorArr.concat(["0xad"]) });
-      expect(createProof2).to.throw(TypeError, /proof.+signature/);
+      expect(createProof2).to.throw(TypeError, /signature/);
     });
     it("creates a frozen instance", () => expect(new Proof(descriptorObj)).to.be.frozen);
     context("with an object descriptor", () => {
@@ -72,7 +76,7 @@ describe("Proof", () => {
     it("returns an array with the object properties", () => {
       const proof = new Proof(descriptorObj);
       expect(proof.toABI()).to.deep
-        .equal([writePermissionArr, sessionArr, signatureRsv]);
+        .equal([writePermissionArr, sessionArr, signatureArr]);
     });
   });
 });

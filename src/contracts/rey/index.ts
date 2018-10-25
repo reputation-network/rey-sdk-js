@@ -1,5 +1,5 @@
 import Contract, { TransactionOptions } from "web3-eth-contract";
-import { Request } from "../../structs";
+import { Request, Transaction } from "../../structs";
 
 export default class ReyContract {
   private readonly contract: Contract;
@@ -15,10 +15,10 @@ export default class ReyContract {
     return this.contract.methods.validateRequest(arg).call();
   }
 
-  public async getPastTransactions(subject: string): Promise<any> {
+  public async getPastTransactions(subject: string): Promise<Transaction[]> {
     // FIXME fromBlock should be rey creation
     const events = await this.contract.getPastEvents("Cashout", {fromBlock: 0, filter: {subject}});
-    return events.map((event) => event.returnValues.transaction); // TODO paginate
+    return events.map((event) => new Transaction(event.returnValues.transaction)); // TODO paginate
   }
 
   public async cashout(...args: any[]) {

@@ -1,8 +1,9 @@
-import { Address, RsvSignature } from "../types";
+import { Address } from "../types";
+import SignatureV2 from "./signature";
 export default class WritePermission {
     readonly writer: Address;
     readonly subject: Address;
-    readonly signature: RsvSignature;
+    readonly signature: SignatureV2;
     constructor(wp: any);
-    toABI(): import("../types").Signature[];
+    toABI(): (string | string[])[];
 }

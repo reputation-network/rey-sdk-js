@@ -1,12 +1,12 @@
-import { RsvSignature } from "../types";
 import ReadPermission from "./read-permission";
 import Session from "./session";
+import SignatureV2 from "./signature";
 export default class Request {
     readonly readPermission: ReadPermission;
     readonly session: Session;
     readonly counter: string;
     readonly value: string;
-    readonly signature: RsvSignature;
+    readonly signature: SignatureV2;
     constructor(req: any);
-    toABI(): (string | import("../types").Signature[])[];
+    toABI(): (string | (string | string[])[])[];
 }

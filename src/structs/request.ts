@@ -1,14 +1,14 @@
-import { RsvSignature } from "../types";
-import { extractIndexOrProperty, isNumeric, isSignature, normalizeSignature } from "../utils";
+import { extractIndexOrProperty, isNumeric } from "../utils";
 import ReadPermission from "./read-permission";
 import Session from "./session";
+import SignatureV2 from "./signature";
 
 export default class Request {
   public readonly readPermission: ReadPermission;
   public readonly session: Session;
   public readonly counter: string;
   public readonly value: string;
-  public readonly signature: RsvSignature;
+  public readonly signature: SignatureV2;
 
   constructor(req: any) {
     let idx = 0;
@@ -18,8 +18,8 @@ export default class Request {
     this.session = new Session(session);
     this.counter = extractIndexOrProperty("request", req, idx++, "counter", isNumeric);
     this.value = extractIndexOrProperty("request", req, idx++, "value", isNumeric);
-    const signature = extractIndexOrProperty("request", req, idx++, "signature", isSignature);
-    this.signature = normalizeSignature(signature);
+    const signature = extractIndexOrProperty("request", req, idx++, "signature");
+    this.signature = new SignatureV2(signature);
     Object.freeze(this);
   }
 
@@ -29,7 +29,7 @@ export default class Request {
       this.session.toABI(),
       this.counter,
       this.value,
-      this.signature,
+      this.signature.toABI(),
     ];
   }
 }
