@@ -1,27 +1,27 @@
-import NodeRSA from "node-rsa";
+import { Key } from "crypto";
 /**
- * Creates an RSA encryption key to encrypt a request's body
+ * Creates an encryption key to encrypt a request's body
  */
-export declare function createKey(): NodeRSA;
+export declare function createKey(): Promise<Key>;
 /**
- * Exports an RSA encryption key to share it with a third party. Only the public key is exported.
+ * Exports an encryption key to share it with a third party. Only the public key is exported.
  * @param key The key, generated using createKey
  */
-export declare function exportKey(key: NodeRSA): string;
+export declare function exportKey(key: Key): string;
 /**
- * Imports an RSA encryption key, received from with a third party. Only the public key is imported.
- * @param serializedKey The key in pkcs8 format
+ * Imports an encryption key, received from with a third party. Only the public key is imported.
+ * @param publicKey The key in pkcs8 format
  */
-export declare function importKey(serializedKey: string): NodeRSA;
+export declare function importKey(publicKey: string): Key;
 /**
- * Encrypts a body using the given RSA key.
- * @param key The RSA key of the recipient that will decrypt the message
+ * Encrypts a body using the given key.
+ * @param key The key of the recipient that will decrypt the message
  * @param body The body to encrypt (either an array or an object, with any arrays or objects as its values)
  */
-export declare function encryptBody(key: NodeRSA, body: any): any;
+export declare function encryptBody(key: Key, body: any): any;
 /**
- * Decrypts a body using the given RSA key.
- * @param key The RSA key to decrypt the message
+ * Decrypts a body using the given key.
+ * @param key The key to decrypt the message
  * @param body The body to decrypt (either an array or an object, with any arrays or objects as its values)
  */
-export declare function decryptBody(key: NodeRSA, body: any): any;
+export declare function decryptBody(key: Key, body: any): any;
