@@ -22,8 +22,10 @@
   },
   "dependencies": {
     "@types/ethereumjs-util": "^5.2.0",
+    "@types/node-rsa": "^0.4.3",
     "@types/webpack": "^4.4.9",
     "axios": "^0.18.0",
+    "node-rsa": "^1.0.1",
     "safe-buffer": "^5.1.2",
     "web3-eth-accounts": "^1.0.0-beta.36",
     "web3-eth-contract": "^1.0.0-beta.36",
