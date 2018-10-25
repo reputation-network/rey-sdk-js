@@ -1,5 +1,5 @@
 declare module "crypto" {
-  export function generateKeyPair(format: type, opts: any, callback: Function);
+  export function generateKeyPair(format: string, opts: any, callback: Function): Promise<Key>;
 
   export type Key = {
     publicKey: string;

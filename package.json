@@ -1,6 +1,6 @@
 {
   "name": "rey-sdk",
-  "version": "0.1.0-alpha.21",
+  "version": "0.1.0-alpha.22",
   "license": "MIT",
   "main": "dist/index.js",
   "module.root": "dist/",
