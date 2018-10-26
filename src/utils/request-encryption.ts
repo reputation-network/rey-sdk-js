@@ -1,5 +1,7 @@
 import crypto, { Key } from "crypto";
 
+export { Key };
+
 /**
  * Creates an encryption key to encrypt a request's body
  */
