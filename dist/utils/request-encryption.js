@@ -11,21 +11,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_1 = __importDefault(require("crypto"));
+const node_rsa_1 = __importDefault(require("node-rsa"));
 /**
  * Creates an encryption key to encrypt a request's body
  */
 function createKey() {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
-            crypto_1.default.generateKeyPair("rsa", { modulusLength: 512,
-                publicKeyEncoding: { type: "pkcs1", format: "pem" },
-                privateKeyEncoding: { type: "pkcs1", format: "pem" } }, (err, publicKey, privateKey) => {
-                if (err)
-                    return reject(err);
-                return resolve({ publicKey, privateKey });
-            });
-        });
+        return Promise.resolve(new node_rsa_1.default({ b: 512 }));
     });
 }
 exports.createKey = createKey;
@@ -34,15 +26,17 @@ exports.createKey = createKey;
  * @param key The key, generated using createKey
  */
 function exportKey(key) {
-    return key.publicKey;
+    return key.exportKey("pkcs8-public");
 }
 exports.exportKey = exportKey;
 /**
  * Imports an encryption key, received from with a third party. Only the public key is imported.
  * @param publicKey The key in pkcs8 format
  */
-function importKey(publicKey) {
-    return { publicKey: publicKey };
+function importKey(serializedKey) {
+    const key = new node_rsa_1.default();
+    key.importKey(serializedKey, "pkcs8-public");
+    return key;
 }
 exports.importKey = importKey;
 /**
@@ -63,7 +57,7 @@ function encryptBody(key, body) {
         }
         return obj;
     }
-    return crypto_1.default.publicEncrypt(key.publicKey, Buffer.from(JSON.stringify(body))).toString("base64");
+    return key.encrypt(JSON.stringify(body), "base64");
 }
 exports.encryptBody = encryptBody;
 /**
@@ -72,7 +66,7 @@ exports.encryptBody = encryptBody;
  * @param body The body to decrypt (either an array or an object, with any arrays or objects as its values)
  */
 function decryptBody(key, body) {
-    if (!key.privateKey)
+    if (!key.isPrivate())
         throw new Error("Private key required to decrypt");
     if (Array.isArray(body)) {
         return body.map((i) => decryptBody(key, i));
@@ -86,7 +80,7 @@ function decryptBody(key, body) {
         }
         return obj;
     }
-    return JSON.parse(crypto_1.default.privateDecrypt(key.privateKey, Buffer.from(body, "base64")).toString());
+    return JSON.parse(key.decrypt(body, "utf8"));
 }
 exports.decryptBody = decryptBody;
 //# sourceMappingURL=request-encryption.js.map

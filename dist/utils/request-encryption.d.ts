@@ -1,4 +1,5 @@
-import { Key } from "crypto";
+import NodeRSA from "node-rsa";
+declare type Key = NodeRSA;
 export { Key };
 /**
  * Creates an encryption key to encrypt a request's body
@@ -13,7 +14,7 @@ export declare function exportKey(key: Key): string;
  * Imports an encryption key, received from with a third party. Only the public key is imported.
  * @param publicKey The key in pkcs8 format
  */
-export declare function importKey(publicKey: string): Key;
+export declare function importKey(serializedKey: string): Key;
 /**
  * Encrypts a body using the given key.
  * @param key The key of the recipient that will decrypt the message
