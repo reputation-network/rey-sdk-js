@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../../utils");
+const encryption_key_1 = __importDefault(require("../../utils/encryption-key"));
 const app_params_1 = __importDefault(require("../app-params"));
 const proof_1 = __importDefault(require("../proof"));
 const read_permission_1 = __importDefault(require("../read-permission"));
@@ -105,6 +106,12 @@ function buildProof(proof, signStrategy) {
     });
 }
 exports.buildProof = buildProof;
+function buildEncryptionKey(encryptionKey, signStrategy) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return build(encryption_key_1.default, encryptionKey, signStrategy);
+    });
+}
+exports.buildEncryptionKey = buildEncryptionKey;
 function buildAppParams(appParams, signStrategy) {
     return __awaiter(this, void 0, void 0, function* () {
         const [request, extraReadPermissions] = yield Promise.all([

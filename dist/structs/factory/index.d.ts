@@ -1,4 +1,5 @@
 import { SignedEntity, SignStrategy } from "../../types";
+import EncryptionKey from "../../utils/encryption-key";
 import AppParams from "../app-params";
 import Proof from "../proof";
 import ReadPermission from "../read-permission";
@@ -24,6 +25,7 @@ export declare function buildSession(session: any, signStrategy: SignStrategyFor
 export declare function buildWritePermission(writePermission: any, signStrategy: SignStrategyForFactory): Promise<WritePermission>;
 export declare function buildRequest(req: any, signStrategy: SignStrategyForFactory): Promise<Request>;
 export declare function buildProof(proof: any, signStrategy: SignStrategyForFactory): Promise<Proof>;
+export declare function buildEncryptionKey(encryptionKey: any, signStrategy: SignStrategyForFactory): Promise<EncryptionKey>;
 export declare function buildAppParams(appParams: any, signStrategy: SignStrategyForFactory): Promise<AppParams>;
 declare const _default: {
     build: typeof build;
