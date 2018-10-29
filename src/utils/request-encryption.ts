@@ -54,7 +54,7 @@ export function encryptBody(key: Key, body: any): any {
  * @param body The body to decrypt (either an array or an object, with any arrays or objects as its values)
  */
 export function decryptBody(key: Key, body: any): any {
-  if (!key.isPrivate()) throw new Error("Private key required to decrypt");
+  if (!key.isPrivate()) { throw new Error("Private key required to decrypt"); }
   if (Array.isArray(body)) {
     return body.map((i) => decryptBody(key, i));
   } else if (typeof body === "object") {
