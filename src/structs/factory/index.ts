@@ -1,5 +1,6 @@
 import { SignedEntity, SignStrategy } from "../../types";
 import { dummySignature, recoverSignatureSeed, toRpcSignature } from "../../utils";
+import EncryptionKey from "../../utils/encryption-key";
 import AppParams from "../app-params";
 import Proof from "../proof";
 import ReadPermission from "../read-permission";
@@ -94,6 +95,10 @@ export async function buildProof(proof: any, signStrategy: SignStrategyForFactor
     buildSession(proof.session, signStrategy),
   ]);
   return build(Proof, { ...proof, writePermission, session }, signStrategy);
+}
+
+export async function buildEncryptionKey(encryptionKey: any, signStrategy: SignStrategyForFactory) {
+  return build(EncryptionKey, encryptionKey, signStrategy);
 }
 
 export async function buildAppParams(appParams: any, signStrategy: SignStrategyForFactory) {

@@ -30,6 +30,10 @@ describe("Factory.buildAppParams", () => {
       manifest: `0x${"d".repeat(64)}`,
       expiration: Math.floor(Date.now() / 1000),
     }],
+    encryptionKey: {
+      publicKey: "-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJtTffmmVumQi89aVYWoAzyEts4kiIhD\n" +
+                 "Zo7ZPmgVnaKV00qEmVfejQK6p6GTQ5jX3Vj+2jnmUkN9x0ce3PYRqScCAwEAAQ==\n-----END PUBLIC KEY-----",
+    },
   };
 
   it("resolves into an instance of AppParams", async () => {
@@ -45,6 +49,9 @@ describe("Factory.buildAppParams", () => {
     assertSignature(params.request.readPermission, address);
     assertSignature(params.request.session, address);
     params.extraReadPermissions.forEach((rp) => assertSignature(rp, address));
+    if (params.encryptionKey) {
+      assertSignature(params.encryptionKey, address);
+    }
   });
 
   it("signs readPermissions and session with subject strategy", async () => {
@@ -93,6 +100,34 @@ describe("Factory.buildAppParams", () => {
     };
     const params = await Factory.buildAppParams(APP, sign);
     assertSignature(params.request, defaultAddress);
+  });
+
+  it("signs encryptionKey with reader strategy", async () => {
+    const defaultPrivateKey = privateKeyFromSeed("a");
+    const readerPrivateKey = privateKeyFromSeed("c");
+    const readerAddress = privateKeyToAddress(readerPrivateKey);
+    const sign = {
+      default: SignStrategy.privateKey(defaultPrivateKey),
+      reader: SignStrategy.privateKey(readerPrivateKey),
+    };
+    const params = await Factory.buildAppParams(APP, sign);
+    if (params.encryptionKey) {
+      assertSignature(params.encryptionKey, readerAddress);
+    }
+  });
+
+  it("signs encryptionKey with encryptionKey strategy", async () => {
+    const defaultPrivateKey = privateKeyFromSeed("a");
+    const readerPrivateKey = privateKeyFromSeed("c");
+    const readerAddress = privateKeyToAddress(readerPrivateKey);
+    const sign = {
+      default: SignStrategy.privateKey(defaultPrivateKey),
+      encryptionKey: SignStrategy.privateKey(readerPrivateKey),
+    };
+    const params = await Factory.buildAppParams(APP, sign);
+    if (params.encryptionKey) {
+      assertSignature(params.encryptionKey, readerAddress);
+    }
   });
 
   it("throws if no subject sign strategy is available", async () => {

@@ -83,19 +83,21 @@ describe("Utils", () => {
       expect(utils.normalizeSignature(hexSignature)).to.deep.equal(signatureWithPrefix);
     });
   });
-  describe("requestEncryption", () => {
-    const re = utils.RequestEncryption;
+  describe("EncryptionKey", () => {
+    const EncryptionKey = utils.EncryptionKey;
     it("creates a key that is exported and imported", async () => {
-      const key = await re.createKey();
-      const serialization = re.exportKey(key);
-      expect(re.exportKey(re.importKey(serialization))).to.equal(serialization);
+      const key = new EncryptionKey();
+      await key.createPair();
+      const serialization = JSON.stringify(key);
+      expect(JSON.stringify(new EncryptionKey(JSON.parse(serialization)))).to.equal(serialization);
     });
     it("encrypts a body's values with an imported key and decrypts them", async () => {
-      const key = await re.createKey();
-      const importedKey = re.importKey(re.exportKey(key));
+      const key = new EncryptionKey();
+      await key.createPair();
+      const importedKey = new EncryptionKey(JSON.parse(JSON.stringify(key)));
 
       const body: any = [{ some: "value", another: "value", aNumber: 33 }, "something else"];
-      const encryptedBody = re.encryptBody(importedKey, body);
+      const encryptedBody = importedKey.encrypt(body);
 
       expect(encryptedBody[0].some).to.not.eql(body[0].some);
       expect(encryptedBody[0].another).to.not.eql(body[0].another);
@@ -103,7 +105,7 @@ describe("Utils", () => {
       expect(typeof(encryptedBody[0].aNumber)).to.equal("string");
       expect(encryptedBody[1]).to.not.eql(body[1]);
 
-      const decryptedBody = re.decryptBody(key, encryptedBody);
+      const decryptedBody = key.decrypt(encryptedBody);
       expect(decryptedBody).to.deep.equal(body);
     });
   });
