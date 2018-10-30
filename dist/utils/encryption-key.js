@@ -24,8 +24,16 @@ class EncryptionKey {
         if (!serializedKey) {
             return;
         }
-        this.keypair = new node_rsa_1.default();
-        this.keypair.importKey(serializedKey.publicKey, "pkcs8-public");
+        if (serializedKey.keypair) {
+            this.keypair = serializedKey.keypair;
+        }
+        else if (serializedKey.publicKey) {
+            this.keypair = new node_rsa_1.default();
+            this.keypair.importKey(serializedKey.publicKey, "pkcs8-public");
+        }
+        else {
+            throw new Error(`Unknown encryption key serialization ${serializedKey}`);
+        }
         this.signature = new signature_1.default(serializedKey.signature);
     }
     /**

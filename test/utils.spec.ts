@@ -90,6 +90,7 @@ describe("Utils", () => {
       await key.createPair();
       const serialization = JSON.stringify(key);
       expect(JSON.stringify(new EncryptionKey(JSON.parse(serialization)))).to.equal(serialization);
+      expect(JSON.stringify(new EncryptionKey(key))).to.equal(serialization);
     });
     it("encrypts a body's values with an imported key and decrypts them", async () => {
       const key = new EncryptionKey();

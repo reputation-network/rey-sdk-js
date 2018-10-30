@@ -116,20 +116,6 @@ describe("Factory.buildAppParams", () => {
     }
   });
 
-  it("signs encryptionKey with encryptionKey strategy", async () => {
-    const defaultPrivateKey = privateKeyFromSeed("a");
-    const readerPrivateKey = privateKeyFromSeed("c");
-    const readerAddress = privateKeyToAddress(readerPrivateKey);
-    const sign = {
-      default: SignStrategy.privateKey(defaultPrivateKey),
-      encryptionKey: SignStrategy.privateKey(readerPrivateKey),
-    };
-    const params = await Factory.buildAppParams(APP, sign);
-    if (params.encryptionKey) {
-      assertSignature(params.encryptionKey, readerAddress);
-    }
-  });
-
   it("throws if no subject sign strategy is available", async () => {
     const sign = {
       reader: SignStrategy.privateKey(privateKeyFromSeed("456")),

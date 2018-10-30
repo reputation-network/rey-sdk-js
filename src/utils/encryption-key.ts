@@ -13,8 +13,14 @@ export default class EncryptionKey {
   constructor(serializedKey?: any) {
     this.signature = new SignatureV2(dummySignature());
     if (!serializedKey) { return; }
-    this.keypair = new NodeRSA();
-    this.keypair.importKey(serializedKey.publicKey, "pkcs8-public");
+    if (serializedKey.keypair) {
+      this.keypair = serializedKey.keypair;
+    } else if (serializedKey.publicKey) {
+      this.keypair = new NodeRSA();
+      this.keypair.importKey(serializedKey.publicKey, "pkcs8-public");
+    } else {
+      throw new Error(`Unknown encryption key serialization ${serializedKey}`);
+    }
     this.signature = new SignatureV2(serializedKey.signature);
   }
 

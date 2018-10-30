@@ -24,6 +24,7 @@ const signerByEntity = new WeakMap<Constructor<SignedEntity>, Exclude<keyof Sign
   [Request, "reader"],
   [Session, "subject"],
   [WritePermission, "subject"],
+  [EncryptionKey, "reader"],
 ]);
 
 type SignStrategyForFactory = SignStrategy | SignStrategyByActor;
@@ -102,12 +103,13 @@ export async function buildEncryptionKey(encryptionKey: any, signStrategy: SignS
 }
 
 export async function buildAppParams(appParams: any, signStrategy: SignStrategyForFactory) {
-  const [request, extraReadPermissions] = await Promise.all([
+  const [request, extraReadPermissions, encryptionKey] = await Promise.all([
     buildRequest(appParams.request, signStrategy),
     Promise.all(appParams.extraReadPermissions
       .map((rp: any) => buildReadPermission(rp, signStrategy))),
+    (appParams.encryptionKey ? buildEncryptionKey(appParams.encryptionKey, signStrategy) : Promise.resolve(undefined)),
   ]);
-  return new AppParams({ request, extraReadPermissions });
+  return new AppParams({ request, extraReadPermissions, encryptionKey });
 }
 
 export default {
@@ -118,4 +120,5 @@ export default {
   buildRequest,
   buildProof,
   buildAppParams,
+  buildEncryptionKey,
 };

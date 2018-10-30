@@ -25,6 +25,7 @@ const signerByEntity = new WeakMap([
     [request_1.default, "reader"],
     [session_1.default, "subject"],
     [write_permission_1.default, "subject"],
+    [encryption_key_1.default, "reader"],
 ]);
 function build(clazz, payload, signStrategy) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -114,12 +115,13 @@ function buildEncryptionKey(encryptionKey, signStrategy) {
 exports.buildEncryptionKey = buildEncryptionKey;
 function buildAppParams(appParams, signStrategy) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [request, extraReadPermissions] = yield Promise.all([
+        const [request, extraReadPermissions, encryptionKey] = yield Promise.all([
             buildRequest(appParams.request, signStrategy),
             Promise.all(appParams.extraReadPermissions
                 .map((rp) => buildReadPermission(rp, signStrategy))),
+            (appParams.encryptionKey ? buildEncryptionKey(appParams.encryptionKey, signStrategy) : Promise.resolve(undefined)),
         ]);
-        return new app_params_1.default({ request, extraReadPermissions });
+        return new app_params_1.default({ request, extraReadPermissions, encryptionKey });
     });
 }
 exports.buildAppParams = buildAppParams;
@@ -131,5 +133,6 @@ exports.default = {
     buildRequest,
     buildProof,
     buildAppParams,
+    buildEncryptionKey,
 };
 //# sourceMappingURL=index.js.map

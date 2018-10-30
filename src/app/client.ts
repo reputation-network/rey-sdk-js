@@ -5,7 +5,9 @@ import { DevelopmentContract } from "../contracts";
 import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import { AppParams } from "../structs";
 import { SignStrategy } from "../types";
+import { normalizeSignature, reyHash } from "../utils";
 import { encodeUnsignedJwt } from "../utils";
+import { validateSignature } from "../utils/struct-validations";
 import { Address, AppManifest, PartialReadPermission } from "./types";
 
 export default class AppClient {
@@ -74,6 +76,11 @@ export default class AppClient {
     const res = await this.opts.http.get(manifest.verifier_url, {
       headers: { authorization: `bearer ${appReadToken}` },
     });
+    if (params.encryptionKey) { // FIXME: Make encryption mandatory once encryption key is required
+      const signature = JSON.parse(Buffer.from(res.headers["x-app-signature"], "base64").toString());
+      validateSignature(reyHash([res.data]), normalizeSignature(signature), params.request.readPermission.source);
+      return params.encryptionKey.decrypt(res.data);
+    }
     return res.data;
   }
 

@@ -16,6 +16,8 @@ const safe_buffer_1 = require("safe-buffer");
 const web3_utils_1 = require("web3-utils");
 const contracts_1 = require("../contracts");
 const utils_1 = require("../utils");
+const utils_2 = require("../utils");
+const struct_validations_1 = require("../utils/struct-validations");
 class AppClient {
     constructor(address, opts = {}) {
         this.address = address;
@@ -75,13 +77,18 @@ class AppClient {
     query(params) {
         return __awaiter(this, void 0, void 0, function* () {
             const manifest = yield this.manifest(params.request.session.verifier);
-            const appReadToken = utils_1.encodeUnsignedJwt(params);
+            const appReadToken = utils_2.encodeUnsignedJwt(params);
             if (!manifest.verifier_url) {
                 throw new Error(`Missing verifier_url for address ${manifest.address}`);
             }
             const res = yield this.opts.http.get(manifest.verifier_url, {
                 headers: { authorization: `bearer ${appReadToken}` },
             });
+            if (params.encryptionKey) { // FIXME: Make encryption mandatory once encryption key is required
+                const signature = JSON.parse(safe_buffer_1.Buffer.from(res.headers["x-app-signature"], "base64").toString());
+                struct_validations_1.validateSignature(utils_1.reyHash([res.data]), utils_1.normalizeSignature(signature), params.request.readPermission.source);
+                return params.encryptionKey.decrypt(res.data);
+            }
             return res.data;
         });
     }

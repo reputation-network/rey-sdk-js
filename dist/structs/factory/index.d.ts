@@ -35,5 +35,6 @@ declare const _default: {
     buildRequest: typeof buildRequest;
     buildProof: typeof buildProof;
     buildAppParams: typeof buildAppParams;
+    buildEncryptionKey: typeof buildEncryptionKey;
 };
 export default _default;
