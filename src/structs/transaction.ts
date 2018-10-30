@@ -1,12 +1,12 @@
 import { extractIndexOrProperty } from "../utils";
 import Proof from "./proof";
 import Request from "./request";
-import SignatureV2 from "./signature";
+import Signature from "./signature";
 
 export default class Transaction {
   public readonly request: Request;
   public readonly proof: Proof;
-  public readonly signature: SignatureV2;
+  public readonly signature: Signature;
 
   constructor(tx: any) {
     let idx = 0;
@@ -15,7 +15,7 @@ export default class Transaction {
     const proof = extractIndexOrProperty("transaction", tx, idx++, "proof");
     this.proof = new Proof(proof);
     const signature = extractIndexOrProperty("transaction", tx, idx++, "signature");
-    this.signature = new SignatureV2(signature);
+    this.signature = new Signature(signature);
     Object.freeze(this);
   }
 

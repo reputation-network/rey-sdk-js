@@ -1,6 +1,6 @@
 import { Address, Hash } from "../types";
 import { extractIndexOrProperty, isAddress, isHash, isNumeric } from "../utils";
-import SignatureV2 from "./signature";
+import Signature from "./signature";
 
 export default class ReadPermission {
   public readonly reader: Address;
@@ -8,7 +8,7 @@ export default class ReadPermission {
   public readonly subject: Address;
   public readonly manifest: Hash;
   public readonly expiration: string;
-  public readonly signature: SignatureV2;
+  public readonly signature: Signature;
 
   constructor(rp: any) {
     let idx = 0;
@@ -19,7 +19,7 @@ export default class ReadPermission {
     const expiration = extractIndexOrProperty("readPermission", rp, idx++, "expiration", isNumeric);
     this.expiration = `${expiration}`;
     const signature = extractIndexOrProperty("readPermission", rp, idx++, "signature");
-    this.signature = new SignatureV2(signature);
+    this.signature = new Signature(signature);
     Object.freeze(this);
   }
 

@@ -1,7 +1,7 @@
-import { Address, Hash, HexString, RpcSignature, RsvSignature, Signature, SignedEntity, SignStrategy } from "../types";
-
-import EncryptionKey from "./encryption-key";
-export { EncryptionKey };
+import { Address, Hash, HexString, SignedEntity } from "../types";
+import { isSignature } from "./signature";
+export * from "./signature";
+export * from "./struct-validations";
 
 /**
  * Determines whether the provided value is a defined value.
@@ -67,65 +67,6 @@ export function isHash(str: any): str is Hash {
 }
 
 /**
- * Determines whether the provided value is a valid rsv representation of
- * a signature, meaning:
- *  - It is an array of lenght 3
- *  - first two values are prefixed hex strings of 32 bytes
- *  - last value is a prefixed hex strings of 1 byte
- * @param signature
- */
-export function isRsvSignature(signature: any): signature is RsvSignature {
-  const [r, s, v] = [0, 1, 2];
-  return Array.isArray(signature) && signature.length === 3 &&
-    isHexString(signature[r], 32) && isHexString(signature[s], 32) &&
-    isHexString(signature[v], 1);
-}
-
-/**
- * Determines whether the provided value is a valid signature, meaning it
- * is either a rsv-formatted signature {@link isRsvSignature} or it is a
- * prefixed hex string of 65 bytes
- * @param signature
- * @see {@link isRsvSignature}
- */
-export function isSignature(signature: any): signature is Signature {
-  return isHexString(signature, 65) || isRsvSignature(signature);
-}
-
-/**
- * Returns the rsv-array-formatted version of the given signature.
- * @param signature
- * @throws if provided value is not a known signature format
- */
-export function normalizeSignature(signature: any): RsvSignature {
-  if (isRsvSignature(signature)) {
-    return signature;
-  } else if (isHexString(signature, 65)) {
-    const [, r, s, v] = /^0x(.{64})(.{64})(.{2})$/.exec(signature)!;
-    return [`0x${r}`, `0x${s}`, `0x${v}`] as RsvSignature;
-  } else {
-    throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);
-  }
-}
-
-/**
- * Returns a rpc formatted signatrue version of the given signature.
- * @param signature
- * @throws if provided value is not a known signature format
- */
-export function toRpcSignature(signature: any): RpcSignature {
-  if (isHexString(signature, 65)) {
-    return signature;
-  } else if (isRsvSignature(signature)) {
-    return `0x${signature.map((p) => p.replace(/^0x/, "")).join("")}`;
-  } else if (typeof signature.toRPC === "function") {
-    return signature.toRPC();
-  } else {
-    throw new TypeError(`Can't parse signature: ${JSON.stringify(signature)}`);
-  }
-}
-
-/**
  * Returns the value for the given propertyName or index from the provided
  * mixed. If both keys have a value, propertyName value will be returned.
  *
@@ -162,14 +103,6 @@ export function extractIndexOrProperty<T = any>(
 }
 
 /**
- * Returns an empty prefixed hex string consisting of 65 bytes of zeros, which
- * checks out as a valid signature.
- */
-export function dummySignature(): Signature {
-  return `0x${"0".repeat(65 * 2)}`;
-}
-
-/**
  * Returns a single dimension array, where every element inside will never be
  * an array itself after recursivelly flattening the provided object
  * @param obj entity to flatten
@@ -202,50 +135,21 @@ export function recoverSignatureSeed(obj: SignedEntity) {
   return deepFlatten(abi) as Array<string | number>;
 }
 
-/**
- * Given a signed entity that is an instance of Clazz, returns a new
- * Clazz instance that mirrors all the params from the original entity
- * exepct its signature. The new signature is the value returned by
- * the provided sign function after recieving the signatureSeed recovered
- * from the original entity.
- * @param element
- * @param sign
- */
-export async function signAgain<T>(entity: any, sign: SignStrategy, clazz?: any): Promise<T> {
-  // FIXME: Add typings to entity: Check for constructor that accepts signature
-  const seed = recoverSignatureSeed(entity);
-  const signature = await sign(...seed);
-  return new clazz(Object.assign({}, entity, { signature }));
-}
-
-/**
- * Returns a url-friendly base64 string of the provided data
- * @param data
- */
-export function base64url(data: any) {
-  return Buffer.from(JSON.stringify(data))
-    .toString("base64")
-    .replace(/=/g, "")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
-}
-
-/**
- * Returns an unsigned JWT with the provided payload.
- * @param payload
- */
-export function encodeUnsignedJwt(payload: any): string {
-  const headers = { typ: "JWT", alg: "none" };
-  const parts = [headers, payload, ""];
-  return parts.map((p) => p ? base64url(p) : "").join(".");
-}
-
-export function decodeUnsignedJwt<T= any>(jwt: string): T {
-  const [headers, payload, signature]  = jwt.split(".");
-  return JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
-}
-
 export function reyHash(data: any[]) {
   const soliditySha3 = require("web3-utils/src/soliditySha3");
   return soliditySha3(...deepFlatten(data));
+}
+
+export function addHexPrefix(hex: string) {
+  if (typeof hex !== "string") {
+    throw new TypeError("Provided argument is not a string");
+  }
+  return /^0x/.test(hex) ? hex : `0x${hex}`;
+}
+
+export function stripHexPrefix(hex: string) {
+  if (typeof hex !== "string") {
+    throw new TypeError("Provided argument is not a string");
+  }
+  return hex.replace(/^0x/, "");
 }

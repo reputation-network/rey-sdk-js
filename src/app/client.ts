@@ -1,14 +1,10 @@
 import axios, { AxiosInstance } from "axios";
-import { Buffer } from "safe-buffer";
-import { sha3 } from "web3-utils";
 import { DevelopmentContract } from "../contracts";
 import RegistryContract, { ManifestEntry } from "../contracts/registry";
-import { AppParams } from "../structs";
-import { SignStrategy } from "../types";
-import { normalizeSignature, reyHash } from "../utils";
-import { encodeUnsignedJwt } from "../utils";
-import { validateSignature } from "../utils/struct-validations";
+import AppParams from "./params";
+import { AppResponse } from "./response";
 import { Address, AppManifest, PartialReadPermission } from "./types";
+import { encodeUnsignedJwt, getManifestWithEntry } from "./utils";
 
 export default class AppClient {
   public readonly address: string;
@@ -37,7 +33,7 @@ export default class AppClient {
       return this.opts.manifestCache.get(address)!;
     }
     const entry = await this.manifestEntry(address);
-    const manifest = await this.getManifest(entry);
+    const manifest = await this._getManifest(entry);
     // FIXME: Check `manifest` actually implements the AppManifest interface
     this.opts.manifestCache.set(address, manifest);
     return manifest;
@@ -70,7 +66,7 @@ export default class AppClient {
     ];
   }
 
-  public async query(params: AppParams) {
+  public async query<T = any>(params: AppParams): Promise<AppResponse<T>> {
     const manifest = await this.manifest(params.request.session.verifier);
     const appReadToken = encodeUnsignedJwt(params);
     if (!manifest.verifier_url) {
@@ -80,27 +76,22 @@ export default class AppClient {
       headers: { authorization: `bearer ${appReadToken}` },
       responseType: "arraybuffer",
     });
-    const output = Buffer.from(res.data).toString();
-    const signatureHeader = res.headers["x-app-signature"];
-    if (!signatureHeader) { throw new Error("Missing app signature in response"); }
-    const signature = JSON.parse(Buffer.from(signatureHeader, "base64").toString());
-    validateSignature(reyHash([output]), normalizeSignature(signature), params.request.readPermission.source);
-
-    return params.encryptionKey.decrypt(JSON.parse(output));
+    const appRes = await AppResponse.fromEncryptedAppResponse(
+      AppResponse.fromAxiosRespone(res),
+      params.encryptionKey,
+    );
+    await appRes.validateSignature(params.request.readPermission.source);
+    return appRes;
   }
 
-  private async getManifest(manifestEntry: ManifestEntry) {
-    const res = await this.opts.http.get(manifestEntry.url, { responseType: "arraybuffer" });
-    const dataBuffer = Buffer.from(res.data);
-    const responseHash = sha3(dataBuffer as any);
-    if (responseHash !== manifestEntry.hash) {
+  private async _getManifest(manifestEntry: ManifestEntry) {
+    const { hash: expectedHash } = manifestEntry;
+    const { manifest, hash: actualHash } = await getManifestWithEntry(
+      manifestEntry.url, this.opts.http);
+    if (expectedHash !== actualHash) {
       throw new Error(`Manifest hash check failed for ${manifestEntry.url}`);
     }
-    try {
-      return JSON.parse(dataBuffer.toString("utf8"));
-    } catch (e) {
-      throw new Error(`Manifest parsing failed for ${manifestEntry.url}`);
-    }
+    return manifest;
   }
 }
 

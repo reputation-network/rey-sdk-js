@@ -1,7 +1,5 @@
-import { EncryptionKey } from "../utils";
-import ReadPermission from "./read-permission";
-import Request from "./request";
-import Signature from "./signature";
+import { ReadPermission, Request } from "../structs";
+import EncryptionKey from "./encryption-key";
 
 export default class AppParams {
   public readonly request: Request;
@@ -21,8 +19,6 @@ export default class AppParams {
     this.extraReadPermissions = extraReadPermissions.map((rp) => new ReadPermission(rp));
 
     this.encryptionKey = new EncryptionKey(appParams.encryptionKey);
-    Object.freeze(this.encryptionKey);
-
     Object.freeze(this.extraReadPermissions);
     Object.freeze(this);
   }

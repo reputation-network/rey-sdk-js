@@ -1,10 +1,14 @@
 import { expect } from "chai";
+import { buildAppParams } from "../../../src/app/factory";
+import AppParams from "../../../src/app/params";
 import * as SignStrategy from "../../../src/sign-strategies";
-import * as REY from "../../../src/structs";
-import Factory from "../../../src/structs/factory";
-import { assertSignature, privateKeyFromSeed, privateKeyToAddress } from "./utils";
+import {
+  assertSignature,
+  privateKeyFromSeed,
+  privateKeyToAddress,
+} from "../../structs/factory/utils";
 
-describe("Factory.buildAppParams", () => {
+describe("buildAppParams", () => {
   const APP = {
     request: {
       readPermission: {
@@ -31,27 +35,29 @@ describe("Factory.buildAppParams", () => {
       expiration: Math.floor(Date.now() / 1000),
     }],
     encryptionKey: {
-      publicKey: "-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJtTffmmVumQi89aVYWoAzyEts4kiIhD\n" +
-                 "Zo7ZPmgVnaKV00qEmVfejQK6p6GTQ5jX3Vj+2jnmUkN9x0ce3PYRqScCAwEAAQ==\n-----END PUBLIC KEY-----",
+      publicKey: [
+        "-----BEGIN PUBLIC KEY-----",
+        "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJtTffmmVumQi89aVYWoAzyEts4kiIhD",
+        "Zo7ZPmgVnaKV00qEmVfejQK6p6GTQ5jX3Vj+2jnmUkN9x0ce3PYRqScCAwEAAQ==",
+        "-----END PUBLIC KEY-----",
+      ].join("\n"),
     },
   };
 
   it("resolves into an instance of AppParams", async () => {
-    const req = await Factory.buildAppParams(APP, SignStrategy.dummy());
-    expect(req).to.be.an.instanceOf(REY.AppParams);
+    const req = await buildAppParams(APP, SignStrategy.dummy());
+    expect(req).to.be.an.instanceOf(AppParams);
   });
 
   it("signs every entity with the provided sign strategy function", async () => {
     const privateKey = privateKeyFromSeed("a");
     const address = privateKeyToAddress(privateKey);
     const sign = SignStrategy.privateKey(privateKey);
-    const params = await Factory.buildAppParams(APP, sign);
+    const params = await buildAppParams(APP, sign);
     assertSignature(params.request.readPermission, address);
     assertSignature(params.request.session, address);
     params.extraReadPermissions.forEach((rp) => assertSignature(rp, address));
-    if (params.encryptionKey) {
-      assertSignature(params.encryptionKey, address);
-    }
+    assertSignature(params.encryptionKey, address);
   });
 
   it("signs readPermissions and session with subject strategy", async () => {
@@ -62,7 +68,7 @@ describe("Factory.buildAppParams", () => {
       default: SignStrategy.privateKey(defaultPrivateKey),
       subject: SignStrategy.privateKey(subjectPrivateKey),
     };
-    const params = await Factory.buildAppParams(APP, sign);
+    const params = await buildAppParams(APP, sign);
     assertSignature(params.request.readPermission, subjectAddress);
     assertSignature(params.request.session, subjectAddress);
     params.extraReadPermissions.forEach((rp) => assertSignature(rp, subjectAddress));
@@ -74,7 +80,7 @@ describe("Factory.buildAppParams", () => {
     const sign = {
       default: SignStrategy.privateKey(defaultPrivateKey),
     };
-    const params = await Factory.buildAppParams(APP, sign);
+    const params = await buildAppParams(APP, sign);
     assertSignature(params.request.readPermission, defaultAddress);
     assertSignature(params.request.session, defaultAddress);
     params.extraReadPermissions.forEach((rp) => assertSignature(rp, defaultAddress));
@@ -88,7 +94,7 @@ describe("Factory.buildAppParams", () => {
       default: SignStrategy.privateKey(defaultPrivateKey),
       reader: SignStrategy.privateKey(readerPrivateKey),
     };
-    const params = await Factory.buildAppParams(APP, sign);
+    const params = await buildAppParams(APP, sign);
     assertSignature(params.request, readerAddress);
   });
 
@@ -98,7 +104,7 @@ describe("Factory.buildAppParams", () => {
     const sign = {
       default: SignStrategy.privateKey(defaultPrivateKey),
     };
-    const params = await Factory.buildAppParams(APP, sign);
+    const params = await buildAppParams(APP, sign);
     assertSignature(params.request, defaultAddress);
   });
 
@@ -110,17 +116,15 @@ describe("Factory.buildAppParams", () => {
       default: SignStrategy.privateKey(defaultPrivateKey),
       reader: SignStrategy.privateKey(readerPrivateKey),
     };
-    const params = await Factory.buildAppParams(APP, sign);
-    if (params.encryptionKey) {
-      assertSignature(params.encryptionKey, readerAddress);
-    }
+    const params = await buildAppParams(APP, sign);
+    assertSignature(params.encryptionKey, readerAddress);
   });
 
   it("throws if no subject sign strategy is available", async () => {
     const sign = {
       reader: SignStrategy.privateKey(privateKeyFromSeed("456")),
     };
-    return Factory.buildAppParams(APP, sign)
+    return buildAppParams(APP, sign)
       .then(() => { throw new Error("Expected buildAppParams to throw, but did not throw"); })
       .catch((e) => expect(e).to.match(/subject sign strategy/));
   });
@@ -129,7 +133,7 @@ describe("Factory.buildAppParams", () => {
     const sign = {
       subject: SignStrategy.privateKey(privateKeyFromSeed("456")),
     };
-    return Factory.buildAppParams(APP, sign)
+    return buildAppParams(APP, sign)
       .then(() => { throw new Error("Expected buildAppParams to throw, but did not throw"); })
       .catch((e) => expect(e).to.match(/reader sign strategy/));
   });

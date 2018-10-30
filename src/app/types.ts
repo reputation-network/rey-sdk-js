@@ -1,8 +1,6 @@
-import { Address, Hash, Signature } from "../types";
+import { Address, Hash } from "../types";
 
-export { Address, Hash, Signature };
-
-export interface AppManifest {
+interface AppManifest {
   version: string;
   name: string;
   description: string;
@@ -17,48 +15,15 @@ export interface AppManifest {
   app_dependencies: Address[];
 }
 
-export interface PartialReadPermission {
+interface PartialReadPermission {
   source: Address;
   manifest: Hash;
   reader: Address;
 }
 
-export interface UnsignedReadPermission {
-  subject: Address;
-  source: Address;
-  reader: Address;
-  expiration: string;
-  signature?: Signature;
-}
-
-export interface UnsignedSession {
-  subject: Address;
-  verifier: Address;
-  fee: string;
-  nonce: string;
-  signature?: Signature;
-}
-
-export interface UnsignedRequest<R= UnsignedReadPermission, S= UnsignedSession> {
-  readPermission: R;
-  session: S;
-  value: string;
-  counter: string;
-  signature?: Signature;
-}
-
-export interface UnsignedAppParams<R= UnsignedReadPermission, S= UnsignedSession> {
-  version: string;
-  request: UnsignedRequest<R, S>;
-  extraReadPermissions: R[];
-}
-
-export interface UnsignedWritePermission {
-  writer: string;
-  subject: string;
-  signature?: Signature;
-}
-
-export interface WithRequestHash {
-  request: { hash: string };
-}
+export {
+  Address,
+  AppManifest,
+  Hash,
+  PartialReadPermission,
+};

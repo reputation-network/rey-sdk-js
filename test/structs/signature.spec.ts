@@ -1,69 +1,93 @@
 import { expect } from "chai";
-import SignatureV2 from "../../src/structs/signature";
+import Signature from "../../src/structs/signature";
 
-describe("SignatureV2", () => {
+describe("Signature", () => {
   const r = `0x${"4".repeat(64)}`;
   const s = `0x${"3".repeat(64)}`;
   const v = `0x${"2".repeat(2)}`;
-  const descriptorObj = { r, s, v };
-  const descriptorArr = [r, s, v];
-  const descriptorHex = `0x${"4".repeat(64)}${"3".repeat(64)}${"2".repeat(2)}`;
+  const signatureRSV = {r, s, v};
+  const signatureABI = [r, s, v];
+  const signatureRPC = `0x${"4".repeat(64)}${"3".repeat(64)}${"2".repeat(2)}`;
 
   describe("constructor", () => {
     it("throws error if r is not valid", () => {
-      const createSignatureV2 = () => new SignatureV2({ ...descriptorObj, r: `0x$abcd` });
-      expect(createSignatureV2).to.throw(TypeError, /signature.+r/);
+      const createSignature = () => new Signature({ ...signatureRSV, r: `0x$abcd` });
+      expect(createSignature).to.throw(TypeError, /signature/);
     });
     it("throws error if s is not valid", () => {
-      const createSignatureV2 = () => new SignatureV2({ ...descriptorObj, s: `0x1234` });
-      expect(createSignatureV2).to.throw(TypeError, /signature.+s/);
+      const createSignature = () => new Signature({ ...signatureRSV, s: `0x1234` });
+      expect(createSignature).to.throw(TypeError, /signature/);
     });
     it("throws error if v is not valid", () => {
-      const createSignatureV2 = () => new SignatureV2({ ...descriptorObj, v: `0x344` });
-      expect(createSignatureV2).to.throw(TypeError, /signature.+v/);
+      const createSignature = () => new Signature({ ...signatureRSV, v: `0x344` });
+      expect(createSignature).to.throw(TypeError, /signature/);
     });
     it("throws error if RPC string is not valid", () => {
-      const createSignatureV2 = () => new SignatureV2(`0xadad`);
-      expect(createSignatureV2).to.throw(TypeError, /signature/);
+      const createSignature = () => new Signature(`0xadad`);
+      expect(createSignature).to.throw(TypeError, /signature/);
     });
-    it("creates a frozen instance", () => expect(new SignatureV2(descriptorObj)).to.be.frozen);
+    it("creates a frozen instance", () => expect(new Signature(signatureRSV)).to.be.frozen);
     context("with an object descriptor", () => {
       it("stores its values", () => {
-        expect(new SignatureV2(descriptorObj)).to.deep.equal(descriptorObj);
+        expect(new Signature(signatureRSV)).to.deep.equal(signatureRSV);
       });
     });
 
     context("with an array descriptor", () => {
       it("stores its values and allows access by property name", () => {
-        expect(new SignatureV2(descriptorArr)).to.deep.equal(descriptorObj);
+        expect(new Signature(signatureABI)).to.deep.equal(signatureRSV);
       });
     });
 
     context("with an RPC descriptor", () => {
       it("stores its values and allows access by property name", () => {
-        expect(new SignatureV2(descriptorHex)).to.deep.equal(descriptorObj);
+        expect(new Signature(signatureRPC)).to.deep.equal(signatureRSV);
       });
     });
   });
 
   describe("#toABI", () => {
     it("returns an array with the object properties", () => {
-      const signature = new SignatureV2(descriptorObj);
-      expect(signature.toABI()).to.deep.equal(descriptorArr);
+      const signature = new Signature(signatureRSV);
+      expect(signature.toABI()).to.deep.equal(signatureABI);
     });
   });
 
   describe("#toRSV", () => {
-    it("returns an array with the object properties", () => {
-      const signature = new SignatureV2(descriptorObj);
-      expect(signature.toRSV()).to.deep.equal(descriptorObj);
+    it("returns an object with the object properties", () => {
+      const signature = new Signature(signatureRSV);
+      expect(signature.toRSV()).to.deep.equal(signatureRSV);
     });
   });
 
   describe("#toRPC", () => {
-    it("returns an array with the object properties", () => {
-      const signature = new SignatureV2(descriptorObj);
-      expect(signature.toRPC()).to.deep.equal(descriptorHex);
+    it("returns an string with the object properties", () => {
+      const signature = new Signature(signatureRSV);
+      expect(signature.toRPC()).to.equal(signatureRPC);
+    });
+  });
+
+  describe("#toString", () => {
+    it("returns the RPC version of the signature", () => {
+      const signature = new Signature(signatureRSV);
+      expect(signature.toString()).to.equal(signature.toRPC());
+      expect(signature.toString()).to.equal(signatureRPC);
+    });
+  });
+
+  context("when JSON.stringify-ing a Signature", () => {
+    context("by itself", () => {
+      it("stringifies into an RSV object format", () => {
+        const signature = new Signature(signatureRSV);
+        expect(JSON.stringify(signature)).to.equal(JSON.stringify(signatureRSV));
+      });
+    });
+    context("as another object property", () => {
+      it("stringifies into an RPC string signature", () => {
+        const signature = new Signature(signatureRSV);
+        expect(JSON.stringify({ signature }))
+          .to.equal(JSON.stringify({ signature: signatureRPC }));
+      });
     });
   });
 });

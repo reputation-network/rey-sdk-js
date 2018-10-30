@@ -1,14 +1,14 @@
 import { extractIndexOrProperty, isNumeric } from "../utils";
 import ReadPermission from "./read-permission";
 import Session from "./session";
-import SignatureV2 from "./signature";
+import Signature from "./signature";
 
 export default class Request {
   public readonly readPermission: ReadPermission;
   public readonly session: Session;
   public readonly counter: string;
   public readonly value: string;
-  public readonly signature: SignatureV2;
+  public readonly signature: Signature;
 
   constructor(req: any) {
     let idx = 0;
@@ -21,7 +21,7 @@ export default class Request {
     const value = extractIndexOrProperty("request", req, idx++, "value", isNumeric);
     this.value = `${value}`;
     const signature = extractIndexOrProperty("request", req, idx++, "signature");
-    this.signature = new SignatureV2(signature);
+    this.signature = new Signature(signature);
     Object.freeze(this);
   }
 

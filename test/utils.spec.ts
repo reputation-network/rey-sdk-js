@@ -44,73 +44,55 @@ describe("Utils", () => {
       expect(utils.isAddress(genHex(20))).to.equal(true);
     });
   });
-  describe("isRsvSignature", () => {
-    it("returns false for anything that is not an array", () => {
-      expect(utils.isRsvSignature(false)).to.equal(false);
-      expect(utils.isRsvSignature(123)).to.equal(false);
-      expect(utils.isRsvSignature("str")).to.equal(false);
-      expect(utils.isRsvSignature({})).to.equal(false);
-    });
-    it("returns false for a rsv signature encoded as a hex string", () => {
-      expect(utils.isRsvSignature(genHex(65))).to.equal(false);
-    });
-    it("returns false for an array for three prefixed hex strings of random byte lenghts", () => {
-      expect(utils.isRsvSignature([genHex(32), genHex(32), genHex(2)])).to.equal(false);
-      expect(utils.isRsvSignature([genHex(32), genHex(40), genHex(1)])).to.equal(false);
-      expect(utils.isRsvSignature([genHex(40), genHex(32), genHex(1)])).to.equal(false);
-    });
-    it("returns true for an array for three prefixed hex strings of length 32, 32, 1 bytes", () => {
-      expect(utils.isRsvSignature([genHex(32), genHex(32), genHex(1)])).to.equal(true);
-    });
-  });
-  describe("normalizeSignature", () => {
-    it("throws error if provided signautre is not an rsv array nor a 65 bytes hex string", () => {
-      expect(() => utils.normalizeSignature(true)).to.throw(TypeError, /parse.+signature/i);
-      expect(() => utils.normalizeSignature(1234)).to.throw(TypeError, /parse.+signature/i);
-      expect(() => utils.normalizeSignature("string")).to.throw(TypeError, /parse.+signature/i);
-      expect(() => utils.normalizeSignature({})).to.throw(TypeError, /parse.+signature/i);
-      expect(() => utils.normalizeSignature([])).to.throw(TypeError, /parse.+signature/i);
-      expect(() => utils.normalizeSignature(genHex(20))).to.throw(TypeError, /parse.+signature/i);
-    });
-    it("returns the provided signature if it is already a valid rsv signature", () => {
-      const signature = [genHex(32), genHex(32), genHex(1)];
-      expect(utils.normalizeSignature(signature)).to.deep.equal(signature);
-    });
-    it("returns the rsv version of the provided signature if it it is a prefixed 65 bytes hex string ", () => {
-      const signature = [genHex(32, false), genHex(32, false), genHex(1, false)];
-      const signatureWithPrefix = signature.map((s) => `0x${s}`);
-      const hexSignature = `0x${signature.join("")}`;
-      expect(utils.normalizeSignature(hexSignature)).to.deep.equal(signatureWithPrefix);
-    });
-  });
-  describe("EncryptionKey", () => {
-    const EncryptionKey = utils.EncryptionKey;
-    it("creates a key that is exported and imported", async () => {
-      const key = new EncryptionKey();
-      await key.createPair();
-      const serialization = JSON.stringify(key);
-      expect(JSON.stringify(new EncryptionKey(JSON.parse(serialization)))).to.equal(serialization);
-      expect(JSON.stringify(new EncryptionKey(key))).to.equal(serialization);
-    });
-    it("encrypts a body's values with an imported key and decrypts them", async () => {
-      const key = new EncryptionKey();
-      await key.createPair();
-      const importedKey = new EncryptionKey(JSON.parse(JSON.stringify(key)));
 
-      const body: any = [{ some: "value", another: "value", aNumber: 33, aNull: null }, "something else"];
-      const encryptedBody = importedKey.encrypt(body);
+  // describe("normalizeSignature", () => {
+  //   it("throws error if provided signautre is not an rsv array nor a 65 bytes hex string", () => {
+  //     expect(() => utils.normalizeSignature(true)).to.throw(TypeError, /parse.+signature/i);
+  //     expect(() => utils.normalizeSignature(1234)).to.throw(TypeError, /parse.+signature/i);
+  //     expect(() => utils.normalizeSignature("string")).to.throw(TypeError, /parse.+signature/i);
+  //     expect(() => utils.normalizeSignature({})).to.throw(TypeError, /parse.+signature/i);
+  //     expect(() => utils.normalizeSignature([])).to.throw(TypeError, /parse.+signature/i);
+  //     expect(() => utils.normalizeSignature(genHex(20))).to.throw(TypeError, /parse.+signature/i);
+  //   });
+  //   it("returns the provided signature if it is already a valid rsv signature", () => {
+  //     const signature = [genHex(32), genHex(32), genHex(1)];
+  //     expect(utils.normalizeSignature(signature)).to.deep.equal(signature);
+  //   });
+  //   it("returns the rsv version of the provided signature if it it is a prefixed 65 bytes hex string ", () => {
+  //     const signature = [genHex(32, false), genHex(32, false), genHex(1, false)];
+  //     const signatureWithPrefix = signature.map((s) => `0x${s}`);
+  //     const hexSignature = `0x${signature.join("")}`;
+  //     expect(utils.normalizeSignature(hexSignature)).to.deep.equal(signatureWithPrefix);
+  //   });
+  // });
+  // describe("EncryptionKey", () => {
+  //   const EncryptionKey = utils.EncryptionKey;
+  //   it("creates a key that is exported and imported", async () => {
+  //     const key = new EncryptionKey();
+  //     await key.createPair();
+  //     const serialization = JSON.stringify(key);
+  //     expect(JSON.stringify(new EncryptionKey(JSON.parse(serialization)))).to.equal(serialization);
+  //     expect(JSON.stringify(new EncryptionKey(key))).to.equal(serialization);
+  //   });
+  //   it("encrypts a body's values with an imported key and decrypts them", async () => {
+  //     const key = new EncryptionKey();
+  //     await key.createPair();
+  //     const importedKey = new EncryptionKey(JSON.parse(JSON.stringify(key)));
 
-      expect(encryptedBody[0].some).to.not.eql(body[0].some);
-      expect(encryptedBody[0].another).to.not.eql(body[0].another);
-      expect(encryptedBody[0].aNumber).to.not.eql(body[0].aNumber);
-      expect(encryptedBody[0].aNull).to.not.equal(null);
-      expect(typeof(encryptedBody[0].aNumber)).to.equal("string");
-      expect(encryptedBody[1]).to.not.eql(body[1]);
+  //     const body: any = [{ some: "value", another: "value", aNumber: 33, aNull: null }, "something else"];
+  //     const encryptedBody = importedKey.encrypt(body);
 
-      const decryptedBody = key.decrypt(encryptedBody);
-      expect(decryptedBody).to.deep.equal(body);
-    });
-  });
+  //     expect(encryptedBody[0].some).to.not.eql(body[0].some);
+  //     expect(encryptedBody[0].another).to.not.eql(body[0].another);
+  //     expect(encryptedBody[0].aNumber).to.not.eql(body[0].aNumber);
+  //     expect(encryptedBody[0].aNull).to.not.equal(null);
+  //     expect(typeof(encryptedBody[0].aNumber)).to.equal("string");
+  //     expect(encryptedBody[1]).to.not.eql(body[1]);
+
+  //     const decryptedBody = key.decrypt(encryptedBody);
+  //     expect(decryptedBody).to.deep.equal(body);
+  //   });
+  // });
 });
 
 function genHex(byteLength: number, prefixed: boolean = true): string {
