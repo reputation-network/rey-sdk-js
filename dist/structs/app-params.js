@@ -18,10 +18,8 @@ class AppParams {
         }
         this.request = new request_1.default(appParams.request);
         this.extraReadPermissions = extraReadPermissions.map((rp) => new read_permission_1.default(rp));
-        if (appParams.encryptionKey) { // FIXME: Make encryption key mandatory once all clients implement it
-            this.encryptionKey = new utils_1.EncryptionKey(appParams.encryptionKey);
-            Object.freeze(this.encryptionKey);
-        }
+        this.encryptionKey = new utils_1.EncryptionKey(appParams.encryptionKey);
+        Object.freeze(this.encryptionKey);
         Object.freeze(this.extraReadPermissions);
         Object.freeze(this);
     }

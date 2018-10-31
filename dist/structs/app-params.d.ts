@@ -5,6 +5,6 @@ export default class AppParams {
     readonly request: Request;
     readonly extraReadPermissions: ReadPermission[];
     readonly version: string;
-    readonly encryptionKey?: EncryptionKey;
+    readonly encryptionKey: EncryptionKey;
     constructor(appParams: any);
 }
