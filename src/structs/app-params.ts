@@ -7,7 +7,7 @@ export default class AppParams {
   public readonly request: Request;
   public readonly extraReadPermissions: ReadPermission[];
   public readonly version: string = "1.0";
-  public readonly encryptionKey?: EncryptionKey;
+  public readonly encryptionKey: EncryptionKey;
 
   constructor(appParams: any) {
     if (!appParams.request) {
@@ -19,10 +19,10 @@ export default class AppParams {
     }
     this.request = new Request(appParams.request);
     this.extraReadPermissions = extraReadPermissions.map((rp) => new ReadPermission(rp));
-    if (appParams.encryptionKey) { // FIXME: Make encryption key mandatory once all clients implement it
-      this.encryptionKey = new EncryptionKey(appParams.encryptionKey);
-      Object.freeze(this.encryptionKey);
-    }
+
+    this.encryptionKey = new EncryptionKey(appParams.encryptionKey);
+    Object.freeze(this.encryptionKey);
+
     Object.freeze(this.extraReadPermissions);
     Object.freeze(this);
   }

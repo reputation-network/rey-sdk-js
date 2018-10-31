@@ -78,14 +78,12 @@ export default class AppClient {
       responseType: "arraybuffer",
     });
     const output = Buffer.from(res.data).toString();
-    if (params.encryptionKey) { // FIXME: Make encryption mandatory once encryption key is required
-      const signatureHeader = res.headers["x-app-signature"];
-      if (!signatureHeader) { throw new Error("Missing app signature in response"); }
-      const signature = JSON.parse(Buffer.from(signatureHeader, "base64").toString());
-      validateSignature(reyHash([output]), normalizeSignature(signature), params.request.readPermission.source);
-      return params.encryptionKey.decrypt(JSON.parse(output));
-    }
-    return JSON.parse(output);
+    const signatureHeader = res.headers["x-app-signature"];
+    if (!signatureHeader) { throw new Error("Missing app signature in response"); }
+    const signature = JSON.parse(Buffer.from(signatureHeader, "base64").toString());
+    validateSignature(reyHash([output]), normalizeSignature(signature), params.request.readPermission.source);
+
+    return params.encryptionKey.decrypt(JSON.parse(output));
   }
 
   private async getManifest(manifestEntry: ManifestEntry) {
