@@ -85,7 +85,11 @@ class AppClient {
                 headers: { authorization: `bearer ${appReadToken}` },
             });
             if (params.encryptionKey) { // FIXME: Make encryption mandatory once encryption key is required
-                const signature = JSON.parse(safe_buffer_1.Buffer.from(res.headers["x-app-signature"], "base64").toString());
+                const signatureHeader = res.headers["x-app-signature"];
+                if (!signatureHeader) {
+                    throw new Error("Missing app signature in response");
+                }
+                const signature = JSON.parse(safe_buffer_1.Buffer.from(signatureHeader, "base64").toString());
                 struct_validations_1.validateSignature(utils_1.reyHash([res.data]), utils_1.normalizeSignature(signature), params.request.readPermission.source);
                 return params.encryptionKey.decrypt(res.data);
             }
