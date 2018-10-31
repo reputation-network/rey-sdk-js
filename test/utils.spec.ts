@@ -97,12 +97,13 @@ describe("Utils", () => {
       await key.createPair();
       const importedKey = new EncryptionKey(JSON.parse(JSON.stringify(key)));
 
-      const body: any = [{ some: "value", another: "value", aNumber: 33 }, "something else"];
+      const body: any = [{ some: "value", another: "value", aNumber: 33, aNull: null }, "something else"];
       const encryptedBody = importedKey.encrypt(body);
 
       expect(encryptedBody[0].some).to.not.eql(body[0].some);
       expect(encryptedBody[0].another).to.not.eql(body[0].another);
       expect(encryptedBody[0].aNumber).to.not.eql(body[0].aNumber);
+      expect(encryptedBody[0].aNull).to.not.equal(null);
       expect(typeof(encryptedBody[0].aNumber)).to.equal("string");
       expect(encryptedBody[1]).to.not.eql(body[1]);
 

@@ -62,7 +62,7 @@ class EncryptionKey {
         if (Array.isArray(body)) {
             return body.map((i) => this.encrypt(i));
         }
-        else if (typeof body === "object") {
+        else if (typeof body === "object" && body !== null) {
             const obj = {};
             for (const k in body) {
                 if (body.hasOwnProperty(k)) {

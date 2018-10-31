@@ -47,7 +47,7 @@ export default class EncryptionKey {
     if (!this.keypair) { throw new Error("Key pair was not initialized"); }
     if (Array.isArray(body)) {
       return body.map((i) => this.encrypt(i));
-    } else if (typeof body === "object") {
+    } else if (typeof body === "object" && body !== null) {
       const obj: any = {};
       for (const k in body) {
         if (body.hasOwnProperty(k)) {
