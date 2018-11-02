@@ -17,6 +17,6 @@ spike*
 #
 package-lock.json
 
-# e2e
+# Dist files
 #
-.contract_info/
+dist/
