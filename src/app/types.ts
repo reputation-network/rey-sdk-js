@@ -11,6 +11,7 @@ export interface AppManifest {
   verifier_url: string;
   verifier_fee: number;
   app_url: string;
+  app_callback_url: string;
   app_reward: number;
   app_schema: any;
   app_dependencies: Address[];

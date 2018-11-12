@@ -24,7 +24,7 @@ describe("Utils", () => {
         expect(utils.isHexString("0xfacebeef")).to.equal(true);
       });
     });
-    context("when passing a two arguments", () => {
+    context("when passing two arguments", () => {
       it("returns true if provided argument is a valid hex string of given length", () => {
         expect(utils.isHexString("0x1234", 2)).to.equal(true);
         expect(utils.isHexString("0xfacebeef", 4)).to.equal(true);
