@@ -38,7 +38,7 @@
     "build:cjs": "tsc --listEmittedFiles",
     "build:browser": "webpack",
     "lint": "tslint 'src/**/*.ts' 'test/**/*.ts'",
-    "preversion": "yarn build && git add -A dist",
+    "preversion": "yarn build && git add --force -A dist",
     "test": "mocha 'test/**/*.spec.ts'",
     "test-ci": "NODE_ENV=test nyc mocha \"test/**/*.spec.ts\""
   },

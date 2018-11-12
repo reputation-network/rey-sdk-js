@@ -44,15 +44,18 @@ export default class AppClient {
   }
 
   public async extraReadPermissions(): Promise<PartialReadPermission[]> {
-    const manifestEntry = await this.manifestEntry();
     const manifest = await this.manifest();
     if (!manifest) {
       throw new Error(`Could not retrieve manifest for app ${this.address}`);
     }
-    const directDependencies = manifest.app_dependencies.map((dep) => {
-      return { reader: manifest.address, source: dep,
-        manifest: manifestEntry.hash };
-    });
+    const directDependencies = await Promise.all(
+      manifest.app_dependencies.map(async (dep) => {
+        const depClient = new AppClient(dep, this.opts);
+        const depManifestEntry = await depClient.manifestEntry();
+        return { reader: manifest.address, source: dep,
+          manifest: depManifestEntry.hash };
+      }),
+    );
     const childDependencies = await Promise.all(
       // FIXME: There is a risk of infinite recursion error here,
       //        handle using client cache
