@@ -6,6 +6,7 @@ import Proof from "../proof";
 import ReadPermission from "../read-permission";
 import Request from "../request";
 import Session from "../session";
+import Transaction from "../transaction";
 import WritePermission from "../write-permission";
 
 interface SignStrategyByActor {
@@ -25,6 +26,7 @@ const signerByEntity = new WeakMap<Constructor<SignedEntity>, Exclude<keyof Sign
   [Session, "subject"],
   [WritePermission, "subject"],
   [EncryptionKey, "reader"],
+  [Transaction, "verifier"],
 ]);
 
 type SignStrategyForFactory = SignStrategy | SignStrategyByActor;
@@ -42,7 +44,7 @@ export async function build<T extends SignedEntity>(
   const sign = signBy[signer]!;
   let signature = (payload || {}).signature || dummySignature();
   const t = new clazz({ ...payload, signature });
-  if (!signature || toRpcSignature(signature) === toRpcSignature(dummySignature())) {
+  if (!signature || toRpcSignature(t.signature) === toRpcSignature(dummySignature())) {
     signature = await sign(...recoverSignatureSeed(t));
   }
   return new clazz({ ...(t as any), signature });
@@ -98,6 +100,14 @@ export async function buildProof(proof: any, signStrategy: SignStrategyForFactor
   return build(Proof, { ...proof, writePermission, session }, signStrategy);
 }
 
+export async function buildTransaction(transaction: any, signStrategy: SignStrategyForFactory) {
+  const [request, proof] = await Promise.all([
+    buildRequest(transaction.request, signStrategy),
+    buildProof(transaction.proof, signStrategy),
+  ]);
+  return build(Transaction, { ...transaction, request, proof }, signStrategy);
+}
+
 export async function buildEncryptionKey(encryptionKey: any, signStrategy: SignStrategyForFactory) {
   return build(EncryptionKey, encryptionKey, signStrategy);
 }
@@ -119,6 +129,7 @@ export default {
   buildWritePermission,
   buildRequest,
   buildProof,
+  buildTransaction,
   buildAppParams,
   buildEncryptionKey,
 };
