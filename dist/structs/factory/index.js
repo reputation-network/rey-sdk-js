@@ -18,6 +18,7 @@ const proof_1 = __importDefault(require("../proof"));
 const read_permission_1 = __importDefault(require("../read-permission"));
 const request_1 = __importDefault(require("../request"));
 const session_1 = __importDefault(require("../session"));
+const transaction_1 = __importDefault(require("../transaction"));
 const write_permission_1 = __importDefault(require("../write-permission"));
 const signerByEntity = new WeakMap([
     [proof_1.default, "writer"],
@@ -26,6 +27,7 @@ const signerByEntity = new WeakMap([
     [session_1.default, "subject"],
     [write_permission_1.default, "subject"],
     [encryption_key_1.default, "reader"],
+    [transaction_1.default, "verifier"],
 ]);
 function build(clazz, payload, signStrategy) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -37,7 +39,7 @@ function build(clazz, payload, signStrategy) {
         const sign = signBy[signer];
         let signature = (payload || {}).signature || utils_1.dummySignature();
         const t = new clazz(Object.assign({}, payload, { signature }));
-        if (!signature || utils_1.toRpcSignature(signature) === utils_1.toRpcSignature(utils_1.dummySignature())) {
+        if (!signature || utils_1.toRpcSignature(t.signature) === utils_1.toRpcSignature(utils_1.dummySignature())) {
             signature = yield sign(...utils_1.recoverSignatureSeed(t));
         }
         return new clazz(Object.assign({}, t, { signature }));
@@ -107,6 +109,16 @@ function buildProof(proof, signStrategy) {
     });
 }
 exports.buildProof = buildProof;
+function buildTransaction(transaction, signStrategy) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [request, proof] = yield Promise.all([
+            buildRequest(transaction.request, signStrategy),
+            buildProof(transaction.proof, signStrategy),
+        ]);
+        return build(transaction_1.default, Object.assign({}, transaction, { request, proof }), signStrategy);
+    });
+}
+exports.buildTransaction = buildTransaction;
 function buildEncryptionKey(encryptionKey, signStrategy) {
     return __awaiter(this, void 0, void 0, function* () {
         return build(encryption_key_1.default, encryptionKey, signStrategy);
@@ -132,6 +144,7 @@ exports.default = {
     buildWritePermission,
     buildRequest,
     buildProof,
+    buildTransaction,
     buildAppParams,
     buildEncryptionKey,
 };

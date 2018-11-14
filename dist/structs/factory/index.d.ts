@@ -5,6 +5,7 @@ import Proof from "../proof";
 import ReadPermission from "../read-permission";
 import Request from "../request";
 import Session from "../session";
+import Transaction from "../transaction";
 import WritePermission from "../write-permission";
 interface SignStrategyByActor {
     default?: SignStrategy;
@@ -25,6 +26,7 @@ export declare function buildSession(session: any, signStrategy: SignStrategyFor
 export declare function buildWritePermission(writePermission: any, signStrategy: SignStrategyForFactory): Promise<WritePermission>;
 export declare function buildRequest(req: any, signStrategy: SignStrategyForFactory): Promise<Request>;
 export declare function buildProof(proof: any, signStrategy: SignStrategyForFactory): Promise<Proof>;
+export declare function buildTransaction(transaction: any, signStrategy: SignStrategyForFactory): Promise<Transaction>;
 export declare function buildEncryptionKey(encryptionKey: any, signStrategy: SignStrategyForFactory): Promise<EncryptionKey>;
 export declare function buildAppParams(appParams: any, signStrategy: SignStrategyForFactory): Promise<AppParams>;
 declare const _default: {
@@ -34,6 +36,7 @@ declare const _default: {
     buildWritePermission: typeof buildWritePermission;
     buildRequest: typeof buildRequest;
     buildProof: typeof buildProof;
+    buildTransaction: typeof buildTransaction;
     buildAppParams: typeof buildAppParams;
     buildEncryptionKey: typeof buildEncryptionKey;
 };
