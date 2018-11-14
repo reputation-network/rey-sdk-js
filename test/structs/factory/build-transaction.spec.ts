@@ -20,7 +20,7 @@ describe("Factory.buildTransaction", () => {
         manifest: `0x${"d".repeat(64)}`,
         expiration: Math.floor(Date.now() / 1000),
       },
-      session: session,
+      session,
       counter: 1,
       value: 100,
     },
@@ -29,7 +29,7 @@ describe("Factory.buildTransaction", () => {
         writer: `0x${"a".repeat(40)}`,
         subject: `0x${"b".repeat(40)}`,
       },
-      session: session,
+      session,
     },
   };
 
@@ -63,7 +63,8 @@ describe("Factory.buildTransaction", () => {
     assertSignature(transaction.request.session, subjectAddress);
   });
 
-  it("signs readPermission and request's session with default strategy if no subject strategy is available", async () => {
+  it("signs readPermission and request's session with default strategy if no subject strategy is available",
+     async () => {
     const defaultPrivateKey = privateKeyFromSeed("a");
     const defaultAddress = privateKeyToAddress(defaultPrivateKey);
     const sign = {
@@ -87,7 +88,8 @@ describe("Factory.buildTransaction", () => {
     assertSignature(transaction.proof.session, subjectAddress);
   });
 
-  it("signs writePermission and proof's session with default strategy if no subject strategy is available", async () => {
+  it("signs writePermission and proof's session with default strategy if no subject strategy is available",
+     async () => {
     const defaultPrivateKey = privateKeyFromSeed("a");
     const defaultAddress = privateKeyToAddress(defaultPrivateKey);
     const sign = {
