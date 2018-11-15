@@ -12,7 +12,8 @@ class ReadPermission {
         this.source = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "source", utils_1.isAddress);
         this.subject = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "subject", utils_1.isAddress);
         this.manifest = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "manifest", utils_1.isHash);
-        this.expiration = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "expiration", utils_1.isNumeric);
+        const expiration = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "expiration", utils_1.isNumeric);
+        this.expiration = `${expiration}`;
         const signature = utils_1.extractIndexOrProperty("readPermission", rp, idx++, "signature");
         this.signature = new signature_1.default(signature);
         Object.freeze(this);

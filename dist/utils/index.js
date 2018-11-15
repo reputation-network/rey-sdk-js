@@ -14,6 +14,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const encryption_key_1 = __importDefault(require("./encryption-key"));
 exports.EncryptionKey = encryption_key_1.default;
 /**
+ * Determines whether the provided value is a defined value.
+ * A defined value is anything that IS NOT null NOR undefined
+ * @param val value to check
+ */
+function isDefined(val) {
+    return val !== null && val !== undefined;
+}
+exports.isDefined = isDefined;
+/**
  * Determines whether the provided value is strictly a number or a
  * string representing a number (radix 10)
  * @param val value to check

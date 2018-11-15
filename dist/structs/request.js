@@ -14,8 +14,10 @@ class Request {
         this.readPermission = new read_permission_1.default(readPermission);
         const session = utils_1.extractIndexOrProperty("request", req, idx++, "session");
         this.session = new session_1.default(session);
-        this.counter = utils_1.extractIndexOrProperty("request", req, idx++, "counter", utils_1.isNumeric);
-        this.value = utils_1.extractIndexOrProperty("request", req, idx++, "value", utils_1.isNumeric);
+        const counter = utils_1.extractIndexOrProperty("request", req, idx++, "counter", utils_1.isNumeric);
+        this.counter = `${counter}`;
+        const value = utils_1.extractIndexOrProperty("request", req, idx++, "value", utils_1.isNumeric);
+        this.value = `${value}`;
         const signature = utils_1.extractIndexOrProperty("request", req, idx++, "signature");
         this.signature = new signature_1.default(signature);
         Object.freeze(this);

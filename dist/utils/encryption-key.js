@@ -26,10 +26,11 @@ class EncryptionKey {
         }
         if (serializedKey.keypair) {
             this.keypair = serializedKey.keypair;
+            this.publicKey = this.keypair.exportKey("pkcs8-public");
         }
         else if (serializedKey.publicKey) {
-            this.keypair = new node_rsa_1.default();
-            this.keypair.importKey(serializedKey.publicKey, "pkcs8-public");
+            this.keypair = new node_rsa_1.default(serializedKey.publicKey, "pkcs8-public");
+            this.publicKey = serializedKey.publicKey;
         }
         else {
             throw new Error(`Unknown encryption key serialization ${serializedKey}`);
@@ -42,6 +43,7 @@ class EncryptionKey {
     createPair() {
         return __awaiter(this, void 0, void 0, function* () {
             this.keypair = new node_rsa_1.default({ b: 512 });
+            this.publicKey = this.keypair.exportKey("pkcs8-public");
             return Promise.resolve();
         });
     }
@@ -49,7 +51,7 @@ class EncryptionKey {
      * Exports an encryption key to share it with a third party. Only the public key is exported.
      */
     toJSON() {
-        return { publicKey: this.exportPublicKey(), signature: this.signature };
+        return { publicKey: this.publicKey, signature: this.signature };
     }
     /**
      * Encrypts a body.
@@ -97,15 +99,9 @@ class EncryptionKey {
     }
     toABI() {
         return [
-            this.exportPublicKey(),
+            this.publicKey,
             this.signature.toABI(),
         ];
-    }
-    exportPublicKey() {
-        if (!this.keypair) {
-            throw new Error("Key pair was not initialized");
-        }
-        return this.keypair.exportKey("pkcs8-public");
     }
 }
 exports.default = EncryptionKey;
