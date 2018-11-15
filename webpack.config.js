@@ -1,4 +1,6 @@
 const path = require("path");
+const webpack = require("webpack");
+const version = process.env.npm_package_version || require("./package.json").version;
 
 module.exports = {
   entry: "./src/index.ts",
@@ -22,4 +24,9 @@ module.exports = {
   resolve: {
     extensions: [ ".ts", ".js" ]
   },
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: `REY-SDK v${version}#[hash]`
+    })
+  ]
 };
