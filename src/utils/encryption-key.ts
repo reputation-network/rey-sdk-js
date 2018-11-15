@@ -5,6 +5,7 @@ import SignatureV2 from "../structs/signature";
 export default class EncryptionKey {
   public signature: SignatureV2;
   private keypair?: NodeRSA;
+  private publicKey?: string;
 
   /**
    * Imports an encryption key if given, received from with a third party. Only the public key is imported.
@@ -14,10 +15,11 @@ export default class EncryptionKey {
     this.signature = new SignatureV2(dummySignature());
     if (!serializedKey) { return; }
     if (serializedKey.keypair) {
-      this.keypair = serializedKey.keypair;
+      this.keypair = serializedKey.keypair as NodeRSA;
+      this.publicKey = this.keypair.exportKey("pkcs8-public");
     } else if (serializedKey.publicKey) {
-      this.keypair = new NodeRSA();
-      this.keypair.importKey(serializedKey.publicKey, "pkcs8-public");
+      this.keypair = new NodeRSA(serializedKey.publicKey, "pkcs8-public");
+      this.publicKey = serializedKey.publicKey;
     } else {
       throw new Error(`Unknown encryption key serialization ${serializedKey}`);
     }
@@ -29,6 +31,7 @@ export default class EncryptionKey {
    */
   public async createPair(): Promise<void> {
     this.keypair = new NodeRSA({ b: 512 });
+    this.publicKey = this.keypair.exportKey("pkcs8-public");
     return Promise.resolve();
   }
 
@@ -36,7 +39,7 @@ export default class EncryptionKey {
    * Exports an encryption key to share it with a third party. Only the public key is exported.
    */
   public toJSON(): any {
-    return { publicKey: this.exportPublicKey(), signature: this.signature };
+    return { publicKey: this.publicKey, signature: this.signature };
   }
 
   /**
@@ -81,13 +84,8 @@ export default class EncryptionKey {
 
   public toABI() {
     return [
-      this.exportPublicKey(),
+      this.publicKey,
       this.signature.toABI(),
     ];
-  }
-
-  private exportPublicKey() {
-    if (!this.keypair) { throw new Error("Key pair was not initialized"); }
-    return this.keypair.exportKey("pkcs8-public");
   }
 }
