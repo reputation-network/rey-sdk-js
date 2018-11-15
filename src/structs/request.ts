@@ -16,8 +16,10 @@ export default class Request {
     this.readPermission = new ReadPermission(readPermission);
     const session = extractIndexOrProperty("request", req, idx++, "session");
     this.session = new Session(session);
-    this.counter = extractIndexOrProperty("request", req, idx++, "counter", isNumeric);
-    this.value = extractIndexOrProperty("request", req, idx++, "value", isNumeric);
+    const counter = extractIndexOrProperty("request", req, idx++, "counter", isNumeric);
+    this.counter = `${counter}`;
+    const value = extractIndexOrProperty("request", req, idx++, "value", isNumeric);
+    this.value = `${value}`;
     const signature = extractIndexOrProperty("request", req, idx++, "signature");
     this.signature = new SignatureV2(signature);
     Object.freeze(this);

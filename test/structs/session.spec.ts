@@ -4,8 +4,8 @@ import Session from "../../src/structs/session";
 describe("Session", () => {
   const subject = `0x${"a".repeat(40)}`;
   const verifier = `0x${"b".repeat(40)}`;
-  const fee = 100;
-  const nonce = Date.now();
+  const fee = "100";
+  const nonce = `${Date.now()}`;
   const r = `0x${"3".repeat(64)}`;
   const s = `0x${"4".repeat(64)}`;
   const v = `0x${"2".repeat(2)}`;
@@ -27,9 +27,10 @@ describe("Session", () => {
       const createSession = () => new Session({ ...descriptorObj, fee: "asdf" });
       expect(createSession).to.throw(TypeError, /session.+fee/);
     });
-    it("throws error if nonce is not numeric", () => {
-      const createSession = () => new Session({ ...descriptorObj, nonce: "asdf" });
-      expect(createSession).to.throw(TypeError, /session.+nonce/);
+    it("throws error if nonce is not defined", () => {
+      const createSession = (n: any) => () => new Session({ ...descriptorObj, nonce: n });
+      expect(createSession(null)).to.throw(TypeError, /session.+nonce/);
+      expect(createSession(undefined)).to.throw(TypeError, /session.+nonce/);
     });
     it("throws error if signature is not valid", () => {
       const createSession = () => new Session({ ...descriptorObj, signature: {} });

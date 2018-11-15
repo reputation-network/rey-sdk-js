@@ -16,7 +16,8 @@ export default class ReadPermission {
     this.source = extractIndexOrProperty("readPermission", rp, idx++, "source", isAddress);
     this.subject = extractIndexOrProperty("readPermission", rp, idx++, "subject", isAddress);
     this.manifest = extractIndexOrProperty("readPermission", rp, idx++, "manifest", isHash);
-    this.expiration = extractIndexOrProperty("readPermission", rp, idx++, "expiration", isNumeric);
+    const expiration = extractIndexOrProperty("readPermission", rp, idx++, "expiration", isNumeric);
+    this.expiration = `${expiration}`;
     const signature = extractIndexOrProperty("readPermission", rp, idx++, "signature");
     this.signature = new SignatureV2(signature);
     Object.freeze(this);

@@ -1,5 +1,5 @@
 import { Address } from "../types";
-import { extractIndexOrProperty, isAddress, isNumeric } from "../utils";
+import { extractIndexOrProperty, isAddress, isDefined, isNumeric } from "../utils";
 import SignatureV2 from "./signature";
 
 export default class Session {
@@ -13,8 +13,10 @@ export default class Session {
     let idx = 0;
     this.subject = extractIndexOrProperty("session", sess, idx++, "subject", isAddress);
     this.verifier = extractIndexOrProperty("session", sess, idx++, "verifier", isAddress);
-    this.fee = extractIndexOrProperty("session", sess, idx++, "fee", isNumeric);
-    this.nonce = extractIndexOrProperty("session", sess, idx++, "nonce", isNumeric);
+    const fee = extractIndexOrProperty("session", sess, idx++, "fee", isNumeric);
+    this.fee = `${fee}`;
+    const nonce = extractIndexOrProperty("session", sess, idx++, "nonce", isDefined);
+    this.nonce = `${nonce}`;
     const signature = extractIndexOrProperty("session", sess, idx++, "signature");
     this.signature = new SignatureV2(signature);
     Object.freeze(this);

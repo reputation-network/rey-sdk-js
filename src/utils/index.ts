@@ -4,6 +4,15 @@ import EncryptionKey from "./encryption-key";
 export { EncryptionKey };
 
 /**
+ * Determines whether the provided value is a defined value.
+ * A defined value is anything that IS NOT null NOR undefined
+ * @param val value to check
+ */
+export function isDefined(val: any): boolean {
+  return val !== null && val !== undefined;
+}
+
+/**
  * Determines whether the provided value is strictly a number or a
  * string representing a number (radix 10)
  * @param val value to check
