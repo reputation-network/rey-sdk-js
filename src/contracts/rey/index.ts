@@ -21,8 +21,9 @@ export default class ReyContract {
     return events.map((event) => new Transaction(event.returnValues.transaction)); // TODO paginate
   }
 
-  public async cashout(...args: any[]) {
-    throw new Error("This method is not yet implemented");
+  public async cashout(transactions: Array<Transaction>) {
+    const arg = transactions.map((t: Transaction) => t.toABI());
+    await this.contract.methods.cashout(arg).send();
   }
 
   public async fund(...args: any[]) {
