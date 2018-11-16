@@ -4,13 +4,16 @@ import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import AppParams from "./params";
 import { AppResponse } from "./response";
 import { Address, AppManifest, PartialReadPermission } from "./types";
-import { encodeUnsignedJwt, getManifestWithEntry } from "./utils";
+import { encodeUnsignedJwt, getManifestWithEntry, isAddress } from "./utils";
 
 export default class AppClient {
   public readonly address: string;
   private readonly opts: Required<IAppClientOptions>;
 
   constructor(address: string, opts: IAppClientOptions = {}) {
+    if (!isAddress(address)) {
+      throw new TypeError(`Wrong address value: ${address}`);
+    }
     this.address = address;
     this.opts = buildOptions(opts);
   }

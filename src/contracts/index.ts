@@ -19,13 +19,23 @@ export default function SmartContract(
     typeof address === "string" ? address : address.rey, options);
   return new Proxy<Contract>({} as any, {
     get(target, prop, receiver) {
-      if (Reflect.has(rey, prop)) {
-        return Reflect.get(rey, prop, receiver);
-      } else if (Reflect.has(registry, prop)) {
-        return Reflect.get(registry, prop, receiver);
-      } else {
-        return undefined;
-      }
+      return Reflect.has(target, prop) && Reflect.get(target, prop, receiver)
+        || Reflect.has(rey, prop) && Reflect.get(rey, prop, receiver)
+        || Reflect.has(registry, prop) && Reflect.get(registry, prop, receiver)
+        || undefined;
+    },
+    has(target, prop) {
+      return Reflect.has(target, prop)
+        || Reflect.has(rey, prop)
+        || Reflect.has(registry, prop);
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      return Reflect.getOwnPropertyDescriptor(target, prop)
+        || Reflect.getOwnPropertyDescriptor(rey, prop)
+        || Reflect.getOwnPropertyDescriptor(Object.getPrototypeOf(rey), prop)
+        || Reflect.getOwnPropertyDescriptor(registry, prop)
+        || Reflect.getOwnPropertyDescriptor(Object.getPrototypeOf(registry), prop)
+        || undefined;
     },
   });
 }

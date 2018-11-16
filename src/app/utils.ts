@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { Buffer } from "safe-buffer";
 import { ManifestEntry } from "../contracts/registry";
-import { reyHash as hash } from "../utils";
+import { isAddress, reyHash as hash } from "../utils";
 import { dummySignature } from "../utils/signature";
 import { validateSignature } from "../utils/struct-validations";
 import { AppManifest } from "./types";
@@ -129,6 +129,7 @@ export {
   encodeUnsignedJwt,
   getManifestWithEntry,
   hash,
+  isAddress,
   traverseLeafs,
   validateSignature,
 };
