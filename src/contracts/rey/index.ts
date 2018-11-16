@@ -21,9 +21,9 @@ export default class ReyContract {
     return events.map((event) => new Transaction(event.returnValues.transaction)); // TODO paginate
   }
 
-  public async cashout(transactions: Array<Transaction>) {
+  public async cashout(address: string, transactions: Transaction[]) {
     const arg = transactions.map((t: Transaction) => t.toABI());
-    await this.contract.methods.cashout(arg).send();
+    await this.contract.methods.cashout(arg).send({ from: address });
   }
 
   public async fund(...args: any[]) {
