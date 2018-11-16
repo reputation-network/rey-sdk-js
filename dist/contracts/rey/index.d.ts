@@ -6,7 +6,7 @@ export default class ReyContract {
     constructor(provider: string, address: string, options?: TransactionOptions);
     validateRequest(request: Request): Promise<boolean>;
     getPastTransactions(subject: string): Promise<Transaction[]>;
-    cashout(...args: any[]): Promise<void>;
+    cashout(address: string, transactions: Transaction[]): Promise<void>;
     fund(...args: any[]): Promise<void>;
     release(...args: any[]): Promise<void>;
     balance(...args: any[]): Promise<void>;

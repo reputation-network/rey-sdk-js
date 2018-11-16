@@ -32,9 +32,10 @@ class ReyContract {
             return events.map((event) => new structs_1.Transaction(event.returnValues.transaction)); // TODO paginate
         });
     }
-    cashout(...args) {
+    cashout(address, transactions) {
         return __awaiter(this, void 0, void 0, function* () {
-            throw new Error("This method is not yet implemented");
+            const arg = transactions.map((t) => t.toABI());
+            yield this.contract.methods.cashout(arg).send({ from: address });
         });
     }
     fund(...args) {
