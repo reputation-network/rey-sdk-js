@@ -29,7 +29,7 @@ export default function apiSignHashFactory(o: IOpts): SignStrategy {
       body: JSON.stringify({ hash: reyHash(data) }),
     }));
     const isOK = res.status >= 200 && res.status < 300;
-    if (isOK) {
+    if (!isOK) {
       const error = res.data.error || res.data.message || res.data;
       throw new Error(`api sign error: ${res.statusText} ${error}`);
     }
