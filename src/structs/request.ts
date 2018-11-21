@@ -1,7 +1,7 @@
-import { extractIndexOrProperty, isNumeric } from "../utils";
 import ReadPermission from "./read-permission";
 import Session from "./session";
 import Signature from "./signature";
+import { extractIndexOrProperty, isNumeric } from "./utils";
 
 export default class Request {
   public readonly readPermission: ReadPermission;

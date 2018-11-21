@@ -1,6 +1,6 @@
-import { extractIndexOrProperty } from "../utils";
 import Session from "./session";
 import Signature from "./signature";
+import { extractIndexOrProperty } from "./utils";
 import WritePermission from "./write-permission";
 
 export default class Proof {

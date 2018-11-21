@@ -27,14 +27,14 @@ export default function EthPersonalSignStrategy(
   };
 }
 
-function getAsync<T extends A[], A>(provider: AsyncProvider<T>, ...providerArgs: any[]): Promise<string> {
+function getAsync<T extends any[]>(provider: AsyncProvider<T>, ...providerArgs: T): Promise<string> {
   return typeof provider === "function"
-    ? Promise.resolve(provider())
+    ? Promise.resolve(provider(...providerArgs))
     : Promise.resolve(provider);
 }
 
 type Provider = string | any; // FIXME: Specify a valid ethereum provider interface
-type AsyncProvider<T extends A[]= [], A= any> =
+type AsyncProvider<T extends any[]= []> =
   | string
   | Promise<string>
   | ((...args: T) => string)

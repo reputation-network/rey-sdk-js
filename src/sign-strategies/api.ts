@@ -22,11 +22,13 @@ export default function apiSignHashFactory(o: IOpts): SignStrategy {
     transformResponseBody: (data: any) => data.signature,
   }, o);
   return async (...data: any[]) => {
+    const body = JSON.stringify({ hash: reyHash(data) });
     const res = await axios(opts.transformRequest({
       method: "POST",
       url: opts.endpoint,
       headers: { "content-type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ hash: reyHash(data) }),
+      body,
+      data: body,
     }));
     const isOK = res.status >= 200 && res.status < 300;
     if (!isOK) {

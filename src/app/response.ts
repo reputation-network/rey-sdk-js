@@ -1,17 +1,18 @@
 import { AxiosResponse } from "axios";
 import { Buffer } from "safe-buffer";
 import { Proof, Signature } from "../structs";
+import { KnownSignatureFormat } from "../types";
 import EncryptionKey from "./encryption-key";
-import { decodeHeader, hash, validateSignature } from "./utils";
+import { decodeHeader } from "./utils";
 
-export class AppResponse<T extends Record<string, any>> {
+export default class AppResponse<T extends Record<string, any>> {
   public static fromAxiosRespone<T>(res: AxiosResponse<string>) {
     const rawData = Buffer.from(res.data);
     return new AppResponse<T>({
       rawData: Buffer.from(res.data),
       data: JSON.parse(rawData.toString()),
-      signature: new Signature(decodeHeader(res.headers, "x-app-signature")),
-      proof: new Proof(decodeHeader(res.headers, "x-app-proof")),
+      signature: decodeHeader(res.headers, "x-app-signature"),
+      proof: decodeHeader(res.headers, "x-app-proof"),
     });
   }
 
@@ -29,18 +30,21 @@ export class AppResponse<T extends Record<string, any>> {
   public readonly proof: Proof;
 
   constructor(opts: {
-    rawData: Buffer,
+    rawData: any,
     data: T,
-    signature: Signature,
+    signature: KnownSignatureFormat,
     proof: Proof,
   }) {
-    this.rawData = opts.rawData;
+    this.rawData = Buffer.from(opts.rawData);
     this.data = opts.data;
-    this.signature = opts.signature;
-    this.proof = opts.proof;
+    this.signature = new Signature(opts.signature);
+    this.proof = new Proof(opts.proof);
   }
 
-  public async validateSignature(source: string) {
-    validateSignature(hash([this.rawData]), this.signature, source);
+  public toABI() {
+    return [
+      this.rawData,
+      this.signature,
+    ];
   }
 }

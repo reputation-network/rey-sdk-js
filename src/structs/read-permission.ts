@@ -1,6 +1,6 @@
 import { Address, Hash } from "../types";
-import { extractIndexOrProperty, isAddress, isHash, isNumeric } from "../utils";
 import Signature from "./signature";
+import { extractIndexOrProperty, isAddress, isHash, isNumeric } from "./utils";
 
 export default class ReadPermission {
   public readonly reader: Address;

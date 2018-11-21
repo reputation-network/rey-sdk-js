@@ -1,5 +1,6 @@
 import { AbiSignature, RpcSignature, RsvSignature } from "../types";
-import { addHexPrefix, isHexString, stripHexPrefix } from "./index";
+import { addHexPrefix, stripHexPrefix } from "./shared";
+import { isHexString } from "./types";
 
 /**
  * Returns true if the provided value is a valid ethereum signature

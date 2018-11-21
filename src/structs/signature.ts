@@ -1,5 +1,5 @@
 import { HexString } from "../types";
-import { parseSignature, toAbiSignature, toRpcSignature, toRsvSignature } from "../utils/signature";
+import { parseSignature, toAbiSignature, toRpcSignature, toRsvSignature } from "./utils";
 
 export default class Signature {
   public readonly r: HexString<32>;

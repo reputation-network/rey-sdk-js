@@ -12,7 +12,10 @@ describe("Signature utils", () => {
     });
     it("returns false for anything that is not an array-like length 3 object", () => {
       expect(u.isAbiSignature(`0x1234`)).to.equal(false);
-      expect(u.isAbiSignature(`0x1234`)).to.equal(false);
     });
+  });
+  describe("isRsvSignature", () => {
+    it("returns true for any object with r,s,v properties with byte lengths: 32,32,1");
+    it("returns false for anything else");
   });
 });

@@ -18,7 +18,7 @@ async function buildEncryptionKey(encryptionKey: any, signStrategy: SignStrategy
 async function buildAppParams(appParams: any, signStrategy: SignStrategyForFactory) {
   const [request, extraReadPermissions, encryptionKey] = await Promise.all([
     buildRequest(appParams.request, signStrategy),
-    Promise.all(appParams.extraReadPermissions
+    Promise.all((appParams.extraReadPermissions || [])
       .map((rp: any) => buildReadPermission(rp, signStrategy))),
     buildEncryptionKey(appParams.encryptionKey, signStrategy),
   ]);

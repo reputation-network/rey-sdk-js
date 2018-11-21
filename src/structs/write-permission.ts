@@ -1,6 +1,6 @@
 import { Address } from "../types";
-import { extractIndexOrProperty, isAddress } from "../utils";
 import Signature from "./signature";
+import { extractIndexOrProperty, isAddress } from "./utils";
 
 export default class WritePermission {
   public readonly writer: Address;

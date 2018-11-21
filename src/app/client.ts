@@ -2,9 +2,9 @@ import axios, { AxiosInstance } from "axios";
 import { DevelopmentContract } from "../contracts";
 import RegistryContract, { ManifestEntry } from "../contracts/registry";
 import AppParams from "./params";
-import { AppResponse } from "./response";
+import AppResponse from "./response";
 import { Address, AppManifest, PartialReadPermission } from "./types";
-import { encodeUnsignedJwt, getManifestWithEntry, isAddress } from "./utils";
+import { encodeUnsignedJwt, getManifestWithEntry, isAddress, validateStructSignature } from "./utils";
 
 export default class AppClient {
   public readonly address: string;
@@ -83,7 +83,7 @@ export default class AppClient {
       AppResponse.fromAxiosRespone(res),
       params.encryptionKey,
     );
-    await appRes.validateSignature(params.request.readPermission.source);
+    validateStructSignature(appRes, params.request.readPermission.source);
     return appRes;
   }
 

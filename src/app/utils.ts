@@ -1,9 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { Buffer } from "safe-buffer";
 import { ManifestEntry } from "../contracts/registry";
-import { isAddress, reyHash as hash } from "../utils";
-import { dummySignature } from "../utils/signature";
-import { validateSignature } from "../utils/struct-validations";
+import { dummySignature, hash, isAddress, validateStructSignature } from "../utils";
 import { AppManifest } from "./types";
 
 /**
@@ -42,6 +40,16 @@ function decodeUnsignedJwt<T= any>(jwt: string): T {
 }
 
 /**
+ * Encodes the given value into a header-safe string
+ * @param value
+ */
+function encodeHeaderValue(value: any) {
+  const json = JSON.stringify(value);
+  const b64 = encodeBase64Url(json);
+  return b64;
+}
+
+/**
  * Extracts the given header from the header hash, parses its value as a
  * base64(json()) encoded value and returs the parsed result.
  * @param headers
@@ -51,11 +59,12 @@ function decodeUnsignedJwt<T= any>(jwt: string): T {
  * @throws {Error} if no header value can not be json decoded
  */
 function decodeHeader(headers: Record<string, string>, headerName: string): any {
-  const base64JsonEncodedHeader = Object.entries(headers).find(
+  const headerEntry = Object.entries(headers).find(
     ([h]) => h.toLowerCase() === headerName.toLocaleLowerCase());
-  if (!base64JsonEncodedHeader) {
+  if (!headerEntry) {
     throw new Error(`Missing app response header: ${headerName}`);
   }
+  const [, base64JsonEncodedHeader] = headerEntry;
   const jsonEncodedHeader = (() => {
     try {
       return decodeBase64Url(base64JsonEncodedHeader);
@@ -63,33 +72,35 @@ function decodeHeader(headers: Record<string, string>, headerName: string): any 
       throw new Error(`Could not base64-decode app response header: ${headerName}`);
     }
   })();
-  const header = (() => {
+  const headerValue = (() => {
     try {
       return JSON.parse(jsonEncodedHeader);
     } catch (e) {
       throw new Error(`Could not json-decode app response header: ${headerName}`);
     }
   })();
-  return header;
+  return headerValue;
 }
 
 /**
- * Given any structure (target), executes the provided iterator for every leaf value
+ * Given any structure (target), executes the provided visitor for every leaf value
  * and assigns the return value as the new value for the entry.
  * A leaf value is anything that is NOT an array nor an object.
  * @param target
- * @param iterator
+ * @param visitor
  */
-function traverseLeafs(target: any, iterator: (v: any) => any): any {
+function traverseLeafs(target: any, visitor: (v: any, k: string) => any, path: string[] = []): any {
   if (Array.isArray(target)) {
-    return target.map((e) => traverseLeafs(e, iterator));
+    return target.map((e, i) => traverseLeafs(e, visitor, path.concat([i.toString()])));
   } else if (target && typeof target === "object") {
     return Object.keys(target).reduce((r, key) => {
       const value = target[key];
-      return Object.assign({}, r, traverseLeafs(value, iterator));
+      return Object.assign({}, r, {
+        [key]: traverseLeafs(value, visitor, path.concat([key])),
+      });
     }, {});
   } else {
-    return iterator(target);
+    return visitor(target, path.join("."));
   }
 }
 
@@ -125,11 +136,11 @@ export {
   decodeUnsignedJwt,
   decodeHeader,
   dummySignature,
+  encodeHeaderValue,
   encodeBase64Url,
   encodeUnsignedJwt,
   getManifestWithEntry,
-  hash,
   isAddress,
   traverseLeafs,
-  validateSignature,
+  validateStructSignature,
 };

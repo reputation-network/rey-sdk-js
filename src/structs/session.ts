@@ -1,6 +1,6 @@
 import { Address } from "../types";
-import { extractIndexOrProperty, isAddress, isDefined, isNumeric } from "../utils";
 import Signature from "./signature";
+import { extractIndexOrProperty, isAddress, isDefined, isNumeric } from "./utils";
 
 export default class Session {
   public readonly subject: Address;

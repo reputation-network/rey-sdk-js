@@ -9,11 +9,11 @@ export default class AppParams {
 
   constructor(appParams: any) {
     if (!appParams.request) {
-      throw new TypeError("Missing request on app access");
+      throw new TypeError("Missing request on app params");
     }
     const extraReadPermissions = appParams.extraReadPermissions || [];
     if (!Array.isArray(extraReadPermissions)) {
-      throw new TypeError("App access extraReadPermissions must be an array");
+      throw new TypeError("App params extraReadPermissions must be an array");
     }
     this.request = new Request(appParams.request);
     this.extraReadPermissions = extraReadPermissions.map((rp) => new ReadPermission(rp));

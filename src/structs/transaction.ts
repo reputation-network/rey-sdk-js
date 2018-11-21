@@ -1,7 +1,7 @@
-import { extractIndexOrProperty } from "../utils";
 import Proof from "./proof";
 import Request from "./request";
 import Signature from "./signature";
+import { extractIndexOrProperty } from "./utils";
 
 export default class Transaction {
   public readonly request: Request;
