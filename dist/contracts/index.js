@@ -1,8 +1,16 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Address = __importStar(require("./constants"));
 const registry_1 = __importDefault(require("./registry"));
 const rey_1 = __importDefault(require("./rey"));
 function SmartContract(provider, address, options) {
@@ -25,15 +33,15 @@ function SmartContract(provider, address, options) {
 exports.default = SmartContract;
 function DevelopmentContract(options) {
     return SmartContract("http://localhost:8545", {
-        registry: "0x556ED3bEaF6b3dDCb1562d3F30f79bF86fFC05B9",
-        rey: "0x76C19376b275A5d77858c6F6d5322311eEb92cf5",
+        registry: Address.DEVELOPMENT_REGISTRY_CONTRACT_ADDRESS,
+        rey: Address.DEVELOPMENT_REY_CONTRACT_ADDRESS,
     }, options);
 }
 exports.DevelopmentContract = DevelopmentContract;
 function TestnetContract(provider, options) {
     return SmartContract(provider, {
-        registry: "0xC05f9be01592902e133F398998E783b6cbD93813",
-        rey: "0xe410f8ff9ce89b2c2bd940967cac9dade139a0c7",
+        registry: Address.RINKEBY_REGISTRY_CONTRACT_ADDRESS,
+        rey: Address.RINKEBY_REY_CONTRACT_ADDRESS,
     }, options);
 }
 exports.TestnetContract = TestnetContract;
