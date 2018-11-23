@@ -12,12 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const web3_eth_contract_1 = __importDefault(require("web3-eth-contract"));
+const web3_eth_personal_1 = __importDefault(require("web3-eth-personal"));
 const structs_1 = require("../../structs");
 class ReyContract {
     constructor(provider, address, options) {
         this.ABI = require("./abi").default;
         web3_eth_contract_1.default.setProvider(provider);
         this.contract = new web3_eth_contract_1.default(this.ABI, address, options);
+        this.personal = new web3_eth_personal_1.default(provider);
     }
     validateRequest(request) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -32,10 +34,11 @@ class ReyContract {
             return events.map((event) => new structs_1.Transaction(event.returnValues.transaction)); // TODO paginate
         });
     }
-    cashout(address, transactions) {
+    cashout(address, password, transactions) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.personal.unlockAccount(address, password, 60);
             const arg = transactions.map((t) => t.toABI());
-            yield this.contract.methods.cashout(arg).send({ from: address });
+            return this.contract.methods.cashout(arg).send({ from: address });
         });
     }
     fund(...args) {
