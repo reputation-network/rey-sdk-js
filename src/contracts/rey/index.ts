@@ -1,13 +1,16 @@
 import Contract, { TransactionOptions } from "web3-eth-contract";
+import Personal from "web3-eth-personal";
 import { Request, Transaction } from "../../structs";
 
 export default class ReyContract {
   private readonly contract: Contract;
+  private readonly personal: Personal;
   private readonly ABI = require("./abi").default;
 
   constructor(provider: string, address: string, options?: TransactionOptions) {
     Contract.setProvider(provider);
     this.contract = new Contract(this.ABI, address, options);
+    this.personal = new Personal(provider);
   }
 
   public async validateRequest(request: Request): Promise<boolean> {
@@ -21,9 +24,10 @@ export default class ReyContract {
     return events.map((event) => new Transaction(event.returnValues.transaction)); // TODO paginate
   }
 
-  public async cashout(address: string, transactions: Transaction[]) {
+  public async cashout(address: string, password: string, transactions: Transaction[]): Promise<void> {
+    await this.personal.unlockAccount(address, password, 60);
     const arg = transactions.map((t: Transaction) => t.toABI());
-    await this.contract.methods.cashout(arg).send({ from: address });
+    return this.contract.methods.cashout(arg).send({ from: address });
   }
 
   public async fund(...args: any[]) {
