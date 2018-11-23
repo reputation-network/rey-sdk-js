@@ -1,4 +1,5 @@
 import { TransactionOptions } from "web3-eth-contract";
+import * as Address from "./constants";
 import RegistryContract from "./registry";
 import ReyContract from "./rey";
 
@@ -31,14 +32,14 @@ export default function SmartContract(
 
 export function DevelopmentContract(options?: TransactionOptions) {
   return SmartContract("http://localhost:8545", {
-    registry: "0x556ED3bEaF6b3dDCb1562d3F30f79bF86fFC05B9",
-    rey: "0x76C19376b275A5d77858c6F6d5322311eEb92cf5",
+    registry: Address.DEVELOPMENT_REGISTRY_CONTRACT_ADDRESS,
+    rey: Address.DEVELOPMENT_REY_CONTRACT_ADDRESS,
   }, options);
 }
 
 export function TestnetContract(provider: Provider, options?: TransactionOptions) {
   return SmartContract(provider, {
-    registry: "0xC05f9be01592902e133F398998E783b6cbD93813",
-    rey: "0xe410f8ff9ce89b2c2bd940967cac9dade139a0c7",
+    registry: Address.RINKEBY_REGISTRY_CONTRACT_ADDRESS,
+    rey: Address.RINKEBY_REY_CONTRACT_ADDRESS,
   }, options);
 }
