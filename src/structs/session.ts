@@ -11,8 +11,10 @@ export default class Session {
 
   constructor(sess: any) {
     let idx = 0;
-    this.subject = extractIndexOrProperty("session", sess, idx++, "subject", isAddress);
-    this.verifier = extractIndexOrProperty("session", sess, idx++, "verifier", isAddress);
+    const subject = extractIndexOrProperty<string>("session", sess, idx++, "subject", isAddress);
+    this.subject = subject.toLowerCase();
+    const verifier = extractIndexOrProperty<string>("session", sess, idx++, "verifier", isAddress);
+    this.verifier = verifier.toLowerCase();
     const fee = extractIndexOrProperty("session", sess, idx++, "fee", isNumeric);
     this.fee = `${fee}`;
     const nonce = extractIndexOrProperty("session", sess, idx++, "nonce", isDefined);

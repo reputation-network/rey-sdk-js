@@ -12,9 +12,12 @@ export default class ReadPermission {
 
   constructor(rp: any) {
     let idx = 0;
-    this.reader = extractIndexOrProperty("readPermission", rp, idx++, "reader", isAddress);
-    this.source = extractIndexOrProperty("readPermission", rp, idx++, "source", isAddress);
-    this.subject = extractIndexOrProperty("readPermission", rp, idx++, "subject", isAddress);
+    const reader = extractIndexOrProperty<string>("readPermission", rp, idx++, "reader", isAddress);
+    this.reader = reader.toLowerCase();
+    const source = extractIndexOrProperty<string>("readPermission", rp, idx++, "source", isAddress);
+    this.source = source.toLowerCase();
+    const subject = extractIndexOrProperty<string>("readPermission", rp, idx++, "subject", isAddress);
+    this.subject = subject.toLowerCase();
     this.manifest = extractIndexOrProperty("readPermission", rp, idx++, "manifest", isHash);
     const expiration = extractIndexOrProperty("readPermission", rp, idx++, "expiration", isNumeric);
     this.expiration = `${expiration}`;

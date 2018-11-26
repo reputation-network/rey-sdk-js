@@ -9,8 +9,10 @@ export default class WritePermission {
 
   constructor(wp: any) {
     let idx = 0;
-    this.writer = extractIndexOrProperty("writePermission", wp, idx++, "writer", isAddress);
-    this.subject = extractIndexOrProperty("writePermission", wp, idx++, "subject", isAddress);
+    const writer = extractIndexOrProperty<string>("writePermission", wp, idx++, "writer", isAddress);
+    this.writer = writer.toLowerCase();
+    const subject = extractIndexOrProperty<string>("writePermission", wp, idx++, "subject", isAddress);
+    this.subject = subject.toLowerCase();
     const signature = extractIndexOrProperty("writePermission", wp, idx++, "signature");
     this.signature = new Signature(signature);
     Object.freeze(this);
